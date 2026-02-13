@@ -6,7 +6,6 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Suspense, useEffect } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { ChatSidebar } from "./chat-sidebar";
 import { cn } from "@/lib/utils";
 
 const UserNav = dynamic(
@@ -57,32 +56,28 @@ export function AppHeader({ className = "" }: AppHeaderProps) {
   };
 
   return (
-    <>
-      <ChatSidebar />
-      <div className={cn("border-border border-b dark:border-input", className)}>
-        <Suspense fallback={null}>
-          <SearchParamsHandler />
-        </Suspense>
+    <div className={cn("border-border border-b dark:border-input", className)}>
+      <Suspense fallback={null}>
+        <SearchParamsHandler />
+      </Suspense>
 
-        <div className="px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link
-                href="/"
-                onClick={handleLogoClick}
-                className="font-semibold text-gray-900 text-lg hover:text-gray-700 dark:text-white dark:hover:text-gray-300"
-              >
-                v0 Clone
-              </Link>
-            </div>
+      <div className="px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link
+              href="/"
+              onClick={handleLogoClick}
+              className="font-semibold text-gray-900 text-lg hover:text-gray-700 dark:text-white dark:hover:text-gray-300"
+            >
+            </Link>
+          </div>
 
-            <div className="flex items-center gap-4">
-              <ThemeToggle />
-              <UserNav session={session} />
-            </div>
+          <div className="flex items-center gap-4">
+            <ThemeToggle />
+            <UserNav session={session} />
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

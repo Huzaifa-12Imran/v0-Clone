@@ -6,6 +6,9 @@ import { SessionProvider } from "@/components/providers/session-provider";
 import { SWRProvider } from "@/components/providers/swr-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { StreamingProvider } from "@/contexts/streaming-context";
+import { SidebarProvider } from "@/contexts/sidebar-context";
+import { AppSidebar } from "@/components/shared/app-sidebar";
+import { SidebarLayout } from "@/components/shared/sidebar-layout";
 
 export const metadata: Metadata = {
   title: "v0 Clone",
@@ -29,7 +32,12 @@ export default function RootLayout({
         <ThemeProvider>
           <SessionProvider>
             <SWRProvider>
-              <StreamingProvider>{children}</StreamingProvider>
+              <StreamingProvider>
+                <SidebarProvider>
+                  <AppSidebar />
+                  <SidebarLayout>{children}</SidebarLayout>
+                </SidebarProvider>
+              </StreamingProvider>
             </SWRProvider>
           </SessionProvider>
         </ThemeProvider>

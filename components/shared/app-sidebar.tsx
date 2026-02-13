@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MessageSquare, Menu, X, FolderKanban } from "lucide-react";
+import { MessageSquare, ChevronRight, Home, Folder, Settings, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { useSidebar } from "@/contexts/sidebar-context";
 
 interface Chat {
   id: string;
@@ -15,7 +15,7 @@ interface Chat {
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, toggle, close } = useSidebar();
   const [chats, setChats] = useState<Chat[]>([]);
 
   useEffect(() => {
@@ -27,99 +27,154 @@ export function AppSidebar() {
 
   // Close sidebar on navigation
   useEffect(() => {
-    setIsOpen(false);
-  }, [pathname]);
+    close();
+  }, [pathname, close]);
+
+  const mainNavItems = [
+    { href: "/", icon: Home, label: "Home" },
+    { href: "/projects", icon: Folder, label: "Projects" },
+    { href: "/chats", icon: MessageSquare, label: "Chats" },
+    { href: "/settings", icon: Settings, label: "Settings" },
+  ];
 
   return (
     <>
-      {/* Sidebar Toggle Button - Fixed position left */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => setIsOpen(true)}
-        className="fixed top-4 left-4 z-40 p-2"
-      >
-        <Menu className="h-5 w-5 text-zinc-400" />
-      </Button>
-
-      {/* Sidebar Backdrop */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 transition-opacity"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
-
-      {/* Sidebar - Slides in from left */}
+      {/* Sidebar - Always visible on the left */}
       <div
         className={cn(
-          "fixed top-0 left-0 h-full w-72 bg-zinc-900 border-r border-zinc-800 z-50 transform transition-transform duration-300 ease-in-out",
-          isOpen ? "translate-x-0" : "-translate-x-full"
+          "fixed top-0 left-0 h-full border-r z-30 transition-all duration-300 ease-in-out flex flex-col",
+          "bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800",
+          isOpen ? "w-72" : "w-16"
         )}
       >
-        {/* Header inside sidebar */}
-        <div className="flex items-center justify-between p-4 border-b border-zinc-800">
-          <Link
-            href="/"
-            className="font-semibold text-white text-lg hover:text-zinc-300"
-          >
-            v0 Clone
-          </Link>
+        {/* Header with v0 Clone */}
+        <div className={cn(
+          "h-16 flex items-center border-b",
+          !isOpen && "justify-center",
+          "border-zinc-200 dark:border-zinc-800"
+        )}>
+          {isOpen ? (
+            <h2 className="font-semibold px-4 text-zinc-900 dark:text-white">
+              v0 Clone
+            </h2>
+          ) : (
+            <span className="font-semibold text-zinc-900 dark:text-white">
+              v0
+            </span>
+          )}
+        </div>
+
+        {/* Toggle Button - Below header */}
+        <div className={cn(
+          "border-b border-zinc-200 dark:border-zinc-800",
+          !isOpen && "flex justify-center"
+        )}>
           <button
-            onClick={() => setIsOpen(false)}
-            className="p-2 hover:bg-zinc-800 rounded-lg transition-colors"
+            onClick={toggle}
+            className={cn(
+              "p-2 rounded-lg transition-all duration-300",
+              "hover:bg-zinc-100 dark:hover:bg-zinc-800",
+              isOpen && "mx-2 my-1"
+            )}
           >
-            <X className="h-4 w-4 text-zinc-400" />
+            <ChevronRight
+              className={cn(
+                "h-4 w-4 transition-transform duration-300",
+                "text-zinc-600 dark:text-zinc-400",
+                !isOpen && "rotate-180"
+              )}
+            />
           </button>
         </div>
 
-        {/* Navigation Links */}
-        <div className="p-4 space-y-2">
-          <Link
-            href="/projects"
-            className={cn(
-              "flex items-center gap-3 p-3 rounded-lg transition-colors",
-              pathname === "/projects"
-                ? "bg-zinc-800 text-white"
-                : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
+        {/* Main Navigation */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-2 border-b border-zinc-200 dark:border-zinc-800">
+            {/* + New Chat Button */}
+            {isOpen ? (
+              <Link
+                href="/chats"
+                onClick={close}
+                className={cn(
+                  "flex items-center gap-2 w-full p-3 rounded-lg mb-1",
+                  "bg-zinc-900 dark:bg-white text-white dark:text-zinc-900",
+                  "hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors"
+                )}
+              >
+                <Plus className="h-4 w-4" />
+                <span className="text-sm font-medium">New Chat</span>
+              </Link>
+            ) : (
+              <Link
+                href="/chats"
+                onClick={close}
+                className={cn(
+                  "flex items-center justify-center p-3 rounded-lg mb-1",
+                  "bg-zinc-900 dark:bg-white text-white dark:text-zinc-900",
+                  "hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors"
+                )}
+              >
+                <Plus className="h-4 w-4" />
+              </Link>
             )}
-          >
-            <FolderKanban className="h-4 w-4" />
-            <span>Projects</span>
-          </Link>
-        </div>
 
-        {/* Recent Chats Section */}
-        <div className="border-t border-zinc-800">
-          <div className="p-4">
-            <h3 className="text-sm font-medium text-zinc-400 mb-2">
-              Recent Chats
-            </h3>
-            <div className="space-y-1">
-              {chats.slice(0, 10).map((chat) => (
-                <Link
-                  key={chat.id}
-                  href={`/chats/${chat.id}`}
-                  onClick={() => setIsOpen(false)}
-                  className={cn(
-                    "flex items-center gap-3 p-2 rounded-lg transition-colors text-sm",
-                    pathname === `/chats/${chat.id}`
-                      ? "bg-zinc-800 text-white"
-                      : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
-                  )}
-                >
-                  <MessageSquare className="h-4 w-4 flex-shrink-0" />
-                  <span className="truncate">
-                    {chat.name || "Untitled Chat"}
-                  </span>
-                </Link>
-              ))}
-              {chats.length === 0 && (
-                <p className="text-sm text-zinc-500">No recent chats</p>
-              )}
-            </div>
+            {/* Navigation Items */}
+            {mainNavItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={close}
+                className={cn(
+                  "flex items-center gap-3 p-3 rounded-lg transition-colors mb-1",
+                  "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-white",
+                  !isOpen && "justify-center"
+                )}
+              >
+                <item.icon className="h-5 w-5 flex-shrink-0" />
+                {isOpen && <span className="text-sm">{item.label}</span>}
+              </Link>
+            ))}
           </div>
+
+          {/* Recent Chats Section */}
+          {isOpen && (
+            <div className="p-4">
+              <h3 className="text-xs font-semibold uppercase tracking-wider mb-2 text-zinc-500 dark:text-zinc-500">
+                Recent Chats
+              </h3>
+              <div className="space-y-1">
+                {chats.length === 0 ? (
+                  <div className="text-center text-zinc-500 text-sm py-4">
+                    No recent chats
+                  </div>
+                ) : (
+                  chats.slice(0, 10).map((chat) => (
+                    <Link
+                      key={chat.id}
+                      href={`/chats/${chat.id}`}
+                      onClick={close}
+                      className={cn(
+                        "flex items-center gap-3 p-2 rounded-lg transition-colors",
+                        "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-white"
+                      )}
+                    >
+                      <MessageSquare className="h-4 w-4 flex-shrink-0" />
+                      <span className="truncate text-sm">
+                        {chat.name || "Untitled Chat"}
+                      </span>
+                    </Link>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
         </div>
+      </div>
+
+      {/* Main content wrapper - always pushed to the right */}
+      <div className="transition-all duration-300 ease-in-out ml-16">
+        {/* Header overlay for when sidebar is collapsed */}
+        <div className="fixed top-0 left-16 right-0 h-4 bg-gradient-to-b from-background to-transparent z-20 pointer-events-none" />
       </div>
     </>
   );

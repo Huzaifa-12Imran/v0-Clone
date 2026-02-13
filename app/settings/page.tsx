@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { AppHeader } from "@/components/shared/app-header";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function SettingsPage() {
   const { data: session } = useSession();
@@ -37,34 +36,44 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black dark:bg-black">
+    <div className="min-h-screen bg-white dark:bg-black">
       <AppHeader />
 
       <main className="mx-auto max-w-2xl px-4 py-8">
-        {/* Back to Home */}
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-zinc-400 hover:text-white mb-6 transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          <span className="text-sm font-medium">Back to Home</span>
-        </Link>
-
-        <h1 className="mb-8 text-2xl font-bold text-white">Account Settings</h1>
+        <h1 className="mb-8 text-2xl font-bold text-zinc-900 dark:text-white">
+          Account Settings
+        </h1>
 
         <div className="space-y-6">
           {/* Profile Section */}
-          <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-6">
-            <h2 className="mb-4 text-lg font-semibold text-white">Profile</h2>
+          <div className={cn(
+            "rounded-lg border p-6",
+            "bg-white dark:bg-zinc-900/50",
+            "border-zinc-200 dark:border-zinc-800"
+          )}>
+            <h2 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-white">
+              Profile
+            </h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-1">Email</label>
+                <label className={cn(
+                  "block text-sm font-medium mb-1",
+                  "text-zinc-600 dark:text-zinc-400"
+                )}>
+                  Email
+                </label>
                 <input
                   type="email"
                   value={session?.user?.email || ""}
                   disabled
-                  className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-400"
+                  className={cn(
+                    "w-full rounded-md border px-3 py-2",
+                    "bg-white dark:bg-zinc-900",
+                    "border-zinc-300 dark:border-zinc-700",
+                    "text-zinc-600 dark:text-zinc-400",
+                    "cursor-not-allowed"
+                  )}
                 />
                 <p className="mt-1 text-xs text-zinc-500">
                   Email cannot be changed
@@ -72,23 +81,35 @@ export default function SettingsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-1">Name</label>
+                <label className={cn(
+                  "block text-sm font-medium mb-1",
+                  "text-zinc-600 dark:text-zinc-400"
+                )}>
+                  Name
+                </label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your name"
-                  className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-white placeholder:text-zinc-500"
+                  className={cn(
+                    "w-full rounded-md border px-3 py-2",
+                    "bg-white dark:bg-zinc-900",
+                    "border-zinc-300 dark:border-zinc-700",
+                    "text-zinc-900 dark:text-white",
+                    "placeholder:text-zinc-400"
+                  )}
                 />
               </div>
 
               {message && (
                 <div
-                  className={`rounded-md p-3 text-sm ${
+                  className={cn(
+                    "rounded-md p-3 text-sm",
                     message.type === "success"
-                      ? "bg-green-900/50 text-green-400"
-                      : "bg-red-900/50 text-red-400"
-                  }`}
+                      ? "bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-400"
+                      : "bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-400"
+                  )}
                 >
                   {message.text}
                 </div>
@@ -97,7 +118,7 @@ export default function SettingsPage() {
               <Button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="bg-zinc-100 text-black hover:bg-zinc-200"
+                className="bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200"
               >
                 {isSaving ? "Saving..." : "Save Changes"}
               </Button>
@@ -105,16 +126,33 @@ export default function SettingsPage() {
           </div>
 
           {/* API Keys Section */}
-          <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-6">
-            <h2 className="mb-4 text-lg font-semibold text-white">API Keys</h2>
+          <div className={cn(
+            "rounded-lg border p-6",
+            "bg-white dark:bg-zinc-900/50",
+            "border-zinc-200 dark:border-zinc-800"
+          )}>
+            <h2 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-white">
+              API Keys
+            </h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-1">v0 API Key</label>
+                <label className={cn(
+                  "block text-sm font-medium mb-1",
+                  "text-zinc-600 dark:text-zinc-400"
+                )}>
+                  v0 API Key
+                </label>
                 <input
                   type="password"
                   placeholder="Enter your v0 API key"
-                  className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-white placeholder:text-zinc-500"
+                  className={cn(
+                    "w-full rounded-md border px-3 py-2",
+                    "bg-white dark:bg-zinc-900",
+                    "border-zinc-300 dark:border-zinc-700",
+                    "text-zinc-900 dark:text-white",
+                    "placeholder:text-zinc-400"
+                  )}
                 />
                 <p className="mt-1 text-xs text-zinc-500">
                   Get your API key from{" "}
@@ -122,7 +160,7 @@ export default function SettingsPage() {
                     href="https://v0.app/chat/settings/keys"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-zinc-400 hover:text-white underline"
+                    className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white underline"
                   >
                     v0.app
                   </a>
@@ -130,11 +168,22 @@ export default function SettingsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-1">Gemini API Key</label>
+                <label className={cn(
+                  "block text-sm font-medium mb-1",
+                  "text-zinc-600 dark:text-zinc-400"
+                )}>
+                  Gemini API Key
+                </label>
                 <input
                   type="password"
                   placeholder="Enter your Gemini API key"
-                  className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-white placeholder:text-zinc-500"
+                  className={cn(
+                    "w-full rounded-md border px-3 py-2",
+                    "bg-white dark:bg-zinc-900",
+                    "border-zinc-300 dark:border-zinc-700",
+                    "text-zinc-900 dark:text-white",
+                    "placeholder:text-zinc-400"
+                  )}
                 />
                 <p className="mt-1 text-xs text-zinc-500">
                   Get your API key from{" "}
@@ -142,34 +191,50 @@ export default function SettingsPage() {
                     href="https://aistudio.google.com/app/apikey"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-zinc-400 hover:text-white underline"
+                    className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white underline"
                   >
                     Google AI Studio
                   </a>
                 </p>
               </div>
 
-              <Button className="bg-zinc-100 text-black hover:bg-zinc-200">
+              <Button className="bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200">
                 Update API Keys
               </Button>
             </div>
           </div>
 
           {/* Danger Zone */}
-          <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-6">
-            <h2 className="mb-4 text-lg font-semibold text-zinc-400">
+          <div className={cn(
+            "rounded-lg border p-6",
+            "bg-white dark:bg-zinc-900/50",
+            "border-zinc-200 dark:border-zinc-800"
+          )}>
+            <h2 className={cn(
+              "mb-4 text-lg font-semibold",
+              "text-zinc-900 dark:text-zinc-400"
+            )}>
               Danger Zone
             </h2>
 
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium text-white">Delete Account</p>
+                  <p className="font-medium text-zinc-900 dark:text-white">Delete Account</p>
                   <p className="text-sm text-zinc-500">
                     Permanently delete your account and all data
                   </p>
                 </div>
-                <Button variant="outline" className="border-zinc-700 text-zinc-400 hover:bg-zinc-800 hover:text-white">
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "border",
+                    "border-zinc-300 dark:border-zinc-700",
+                    "text-zinc-600 dark:text-zinc-400",
+                    "hover:bg-zinc-50 dark:hover:bg-zinc-800",
+                    "hover:text-zinc-900 dark:hover:text-white"
+                  )}
+                >
                   Delete Account
                 </Button>
               </div>
