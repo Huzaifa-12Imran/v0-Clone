@@ -1,6 +1,6 @@
 "use client";
 
-import { FolderKanban, LogOut, MessageSquare, User } from "lucide-react";
+import { FolderKanban, LogOut, MessageSquare, Settings, User } from "lucide-react";
 import Link from "next/link";
 import type { Session } from "next-auth";
 import { signOut } from "next-auth/react";
@@ -62,6 +62,12 @@ export function UserNav({ session }: UserNavProps) {
               <Link href="/chats" className="cursor-pointer">
                 <MessageSquare className="mr-2 h-4 w-4" />
                 <span>Chats</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/settings" className="cursor-pointer">
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Settings</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
