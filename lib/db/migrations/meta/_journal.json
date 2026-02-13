@@ -36,6 +36,13 @@
       "when": 1757899400000,
       "tag": "0004_many_v0_clone",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1757900000000,
+      "tag": "0005_add_user_name",
+      "breakpoints": true
     }
   ]
 }
