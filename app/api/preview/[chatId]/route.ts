@@ -34,13 +34,40 @@ export async function GET(
     console.log(`[Preview] Found ${matches.length} code blocks for chat ${chatId}`);
 
     // Process each code block separately
-    const processedBlocks = matches.map((match, index) => {
-      const rawCode = match[1];
-      const isJS = /function|const|class|=>/.test(rawCode);
-      
-      let finalCode = rawCode.replace(/import\s+[\s\S]*?from\s+['"][^'"]+['"];?/g, "");
+    const processedBlocks: any[] = [];
+    
+    for (const match of matches) {
+      const rawCode = match[1].trim();
+      let codeToProcess = rawCode;
+      let blockName = `Preview ${processedBlocks.length + 1}`;
+      let isJS = /function|const|class|=>/.test(rawCode);
 
-      const topLevelSignatures = [...rawCode.matchAll(/^\s*(?:export\s+)?(?:default\s+)?(?:function|const|class|var|let)\s+(\w+)/gm)];
+      // Check if it's a full-stack JSON block
+      if (rawCode.startsWith("{") && rawCode.endsWith("}")) {
+        try {
+          const json = JSON.parse(rawCode);
+          if (json.type === "fullstack" && Array.isArray(json.files)) {
+            // Find a renderable frontend file
+            // Priority: app/page.tsx, src/app/page.tsx, any page.tsx, any .tsx, any .jsx
+            const previewableFile = 
+              json.files.find((f: any) => f.path === "app/page.tsx" || f.path === "src/app/page.tsx") ||
+              json.files.find((f: any) => f.path.endsWith("page.tsx")) ||
+              json.files.find((f: any) => f.path.endsWith(".tsx") || f.path.endsWith(".jsx"));
+
+            if (previewableFile) {
+              codeToProcess = previewableFile.content;
+              blockName = `Preview: ${previewableFile.path.split("/").pop()}`;
+              isJS = true;
+            }
+          }
+        } catch (e) {
+          // Not valid JSON or parsing failed, fall back to original logic
+        }
+      }
+      
+      let finalCode = codeToProcess.replace(/import\s+[\s\S]*?from\s+['"][^'"]+['"];?/g, "");
+
+      const topLevelSignatures = [...codeToProcess.matchAll(/^\s*(?:export\s+)?(?:default\s+)?(?:function|const|class|var|let)\s+(\w+)/gm)];
       const pascalCaseMatch = topLevelSignatures.find(m => /^[A-Z]/.test(m[1]));
       const fallbackName = pascalCaseMatch ? pascalCaseMatch[1] : (topLevelSignatures.length > 0 ? topLevelSignatures[topLevelSignatures.length - 1][1] : "");
 
@@ -48,14 +75,14 @@ export async function GET(
           finalCode += `\n\nexport default ${fallbackName};`;
       }
 
-      return {
-          id: `block-${index}`,
-          name: `Preview ${index + 1}`,
+      processedBlocks.push({
+          id: `block-${processedBlocks.length}`,
+          name: blockName,
           code: finalCode,
           fallbackName,
           isJS
-      };
-    });
+      });
+    }
 
     if (processedBlocks.length === 0) {
        if (content.includes("<") && content.includes(">")) {

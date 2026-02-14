@@ -1,8 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { auth } from "@/app/(auth)/auth";
-import db from "@/lib/db/connection";
-import { users } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { supabase } from "@/lib/db/supabase";
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,17 +15,12 @@ export async function POST(request: NextRequest) {
 
     const { name } = await request.json();
 
-    if (!db) {
-      return NextResponse.json(
-        { error: "Database not available" },
-        { status: 500 },
-      );
-    }
+    const { error } = await supabase
+      .from("users")
+      .update({ name: name || null })
+      .eq("id", session.user.id);
 
-    await db
-      .update(users)
-      .set({ name: name || null })
-      .where(eq(users.id, session.user.id));
+    if (error) throw error;
 
     return NextResponse.json({ success: true });
   } catch (error) {
