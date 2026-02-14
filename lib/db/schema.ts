@@ -87,3 +87,18 @@ export const chat_messages = pgTable("chat_messages", {
 });
 
 export type ChatMessageDB = InferSelectModel<typeof chat_messages>;
+
+// Project files table - stores individual files in a project
+export const project_files = pgTable("project_files", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  project_id: uuid("project_id")
+    .notNull()
+    .references(() => projects.id, { onDelete: "cascade" }),
+  version: integer("version").notNull(),
+  file_path: varchar("file_path", { length: 512 }).notNull(), // e.g., "src/app/page.tsx"
+  file_content: text("file_content").notNull(),
+  file_type: varchar("file_type", { length: 50 }), // e.g., "typescript", "css", "json"
+  created_at: timestamp("created_at").notNull().defaultNow(),
+});
+
+export type ProjectFile = InferSelectModel<typeof project_files>;
