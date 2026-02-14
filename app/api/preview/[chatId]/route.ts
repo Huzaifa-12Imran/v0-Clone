@@ -50,17 +50,27 @@ export async function GET(
     
     for (const match of matches) {
       const rawCode = match[1].trim();
-      let codeToProcess = rawCode;
-      let blockName = `Preview ${processedBlocks.length + 1}`;
-      let isJS = /function|const|class|=>/.test(rawCode);
+      if (!rawCode) continue;
 
-      // Check if it's a full-stack JSON block
-      if (rawCode.startsWith("{") && rawCode.endsWith("}")) {
+      let codeToProcess = null;
+      let blockName = null;
+      let isJS = false;
+      let isFullStack = false;
+
+      // 1. Check if it's a full-stack JSON block
+      if (rawCode.startsWith("{") && (rawCode.endsWith("}") || rawCode.includes('"files"'))) {
         try {
-          const json = JSON.parse(rawCode);
+          // Attempt to fix potentially truncated JSON
+          let jsonStr = rawCode;
+          if (!jsonStr.endsWith("}")) {
+              const lastBrace = jsonStr.lastIndexOf("}");
+              if (lastBrace !== -1) jsonStr = jsonStr.substring(0, lastBrace + 1);
+              else jsonStr += "}"; // Final fallback
+          }
+          
+          const json = JSON.parse(jsonStr);
           if (json.type === "fullstack" && Array.isArray(json.files)) {
-            // Find a renderable frontend file
-            // Priority: app/page.tsx, src/app/page.tsx, any page.tsx, any .tsx, any .jsx
+            isFullStack = true;
             const previewableFile = 
               json.files.find((f: any) => f.path === "app/page.tsx" || f.path === "src/app/page.tsx") ||
               json.files.find((f: any) => f.path.endsWith("page.tsx")) ||
@@ -73,40 +83,67 @@ export async function GET(
             }
           }
         } catch (e) {
-          // Regex Fallback: If JSON parsing fails (truncated), try to find page.tsx content
+          // JSON parse failed, try regex fallback for page.tsx
           const pageRegex = /"path":\s*"[^"]*page\.tsx",\s*"content":\s*"([\s\S]*?)"(?:\s*,\s*"description"|(?:\s*\}|\]))/i;
           const pageMatch = rawCode.match(pageRegex);
           if (pageMatch) {
              try {
-                // Try to unescape common sequences
                 codeToProcess = pageMatch[1].replace(/\\n/g, "\n").replace(/\\"/g, '"').replace(/\\t/g, "\t");
                 blockName = `Preview: page.tsx (Fragment)`;
                 isJS = true;
+                isFullStack = true;
              } catch (err) {}
           }
         }
       }
-      
-      // Process imports: convert lucide-react de-structuring to const { ... } = Lucide;
-      let finalCode = codeToProcess.replace(
-        /import\s+\{\s*([^}]+)\s*\}\s+from\s+['"]lucide-react['"];?/g,
-        "const { $1 } = Lucide;"
-      );
-      
-      // Strip remaining imports
-      finalCode = finalCode.replace(/import\s+[\s\S]*?from\s+['"][^'"]+['"];?/g, "");
 
-      const topLevelSignatures = [...codeToProcess.matchAll(/^\s*(?:export\s+)?(?:default\s+)?(?:function|const|class|var|let)\s+(\w+)/gm)];
-      const pascalCaseMatch = topLevelSignatures.find(m => /^[A-Z]/.test(m[1]));
-      const fallbackName = pascalCaseMatch ? pascalCaseMatch[1] : (topLevelSignatures.length > 0 ? topLevelSignatures[topLevelSignatures.length - 1][1] : "");
+      // 2. If not a fullstack project, check if it's raw JS/JSX/TSX
+      if (!isFullStack) {
+          // Avoid matching metadata JSON (like dependencies) as JS
+          const looksLikeJSON = rawCode.startsWith("{") || rawCode.startsWith("[");
+          // Heuristic for JS: contains imports, exports, or React-like patterns
+          const looksLikeJS = /import\s+|^export\s+|function\s+[A-Z]|const\s+[A-Z]|^class\s+|return\s*\(|<[A-Z][A-Za-z0-9]*[\s\/>]/.test(rawCode);
+          
+          if (looksLikeJS && !looksLikeJSON) {
+              codeToProcess = rawCode;
+              isJS = true;
+              blockName = `Code Block ${processedBlocks.length + 1}`;
+          } else if (rawCode.includes("<") && rawCode.includes(">") && !looksLikeJSON) {
+              // HTML or simple JSX
+              codeToProcess = rawCode;
+              isJS = false;
+              blockName = `HTML Preview ${processedBlocks.length + 1}`;
+          }
+      }
 
-      if (fallbackName && !finalCode.match(/export\s+default/)) {
-          finalCode += `\n\nexport default ${fallbackName};`;
+      if (!codeToProcess) continue;
+
+      // Process imports and fallback names for JS blocks
+      let finalCode = codeToProcess;
+      let fallbackName = "";
+
+      if (isJS) {
+          // Process imports: convert lucide-react de-structuring to const { ... } = Lucide;
+          finalCode = codeToProcess.replace(
+            /import\s+\{\s*([^}]+)\s*\}\s+from\s+['"]lucide-react['"];?/g,
+            "const { $1 } = Lucide;"
+          );
+          
+          // Strip remaining imports
+          finalCode = finalCode.replace(/import\s+[\s\S]*?from\s+['"][^'"]+['"];?/g, "");
+
+          const topLevelSignatures = [...codeToProcess.matchAll(/^\s*(?:export\s+)?(?:default\s+)?(?:function|const|class|var|let)\s+(\w+)/gm)];
+          const pascalCaseMatch = topLevelSignatures.find(m => /^[A-Z]/.test(m[1]));
+          fallbackName = pascalCaseMatch ? pascalCaseMatch[1] : (topLevelSignatures.length > 0 ? topLevelSignatures[topLevelSignatures.length - 1][1] : "");
+
+          if (fallbackName && !finalCode.match(/export\s+default/)) {
+              finalCode += `\n\nexport default ${fallbackName};`;
+          }
       }
 
       processedBlocks.push({
           id: `block-${processedBlocks.length}`,
-          name: blockName,
+          name: blockName || `Preview ${processedBlocks.length + 1}`,
           code: finalCode,
           fallbackName,
           isJS
