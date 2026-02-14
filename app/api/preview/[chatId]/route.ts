@@ -12,9 +12,8 @@ export async function GET(
     const chatStore = getChatStore();
     const messages = chatStore.get(chatId);
 
-    // If no messages yet, it might be a new chat still being initialized
-    const lastModelMessage = [...(messages || [])].reverse().find(m => m.role === "model");
-    if (!messages || messages.length === 0 || !lastModelMessage) {
+    const modelMessages = (messages || []).filter(m => m.role === "model");
+    if (!messages || messages.length === 0 || modelMessages.length === 0) {
       console.log(`[Preview] Chat ${chatId} initializing or no model message yet`);
       return new Response(`
         <div style="padding: 20px; font-family: sans-serif; text-align: center; color: #374151;">
@@ -27,9 +26,22 @@ export async function GET(
       `, { status: 200, headers: { "Content-Type": "text/html" } });
     }
 
-    const content = lastModelMessage.content;
+    // Merge sequential model messages to handle "continue" fragments
+    // We take up to the last 5 model messages to reconstruct projects split by limits
+    const content = modelMessages.slice(-5).map(m => m.content).join("\n\n");
     const codeBlockRegex = /```[\w]*[^\n]*\n([\s\S]*?)```/gi;
-    const matches = Array.from(content.matchAll(codeBlockRegex));
+    let matches = Array.from(content.matchAll(codeBlockRegex));
+    
+    // Support for unclosed code blocks (truncated generation)
+    if (matches.length === 0 && content.includes("```")) {
+        const lastBlockIndex = content.lastIndexOf("```");
+        const fragment = content.substring(lastBlockIndex + 3);
+        // If it starts with a language tag, strip it
+        const blockCode = fragment.replace(/^[a-zA-Z]*\n/, "");
+        if (blockCode.trim().length > 20) {
+            matches.push([null, blockCode] as any);
+        }
+    }
     
     console.log(`[Preview] Found ${matches.length} code blocks for chat ${chatId}`);
 
@@ -61,7 +73,17 @@ export async function GET(
             }
           }
         } catch (e) {
-          // Not valid JSON or parsing failed, fall back to original logic
+          // Regex Fallback: If JSON parsing fails (truncated), try to find page.tsx content
+          const pageRegex = /"path":\s*"[^"]*page\.tsx",\s*"content":\s*"([\s\S]*?)"(?:\s*,\s*"description"|(?:\s*\}|\]))/i;
+          const pageMatch = rawCode.match(pageRegex);
+          if (pageMatch) {
+             try {
+                // Try to unescape common sequences
+                codeToProcess = pageMatch[1].replace(/\\n/g, "\n").replace(/\\"/g, '"').replace(/\\t/g, "\t");
+                blockName = `Preview: page.tsx (Fragment)`;
+                isJS = true;
+             } catch (err) {}
+          }
         }
       }
       
@@ -166,9 +188,31 @@ export async function GET(
             }
         });
 
+        // Next.js Mocks
+        const Link = ({ href, children, className, ...props }) => (
+            <a href={href} className={className} {...props} onClick={(e) => {
+                if (href === "#" || href === "/") e.preventDefault();
+            }}>
+                {children}
+            </a>
+        );
+        const Image = ({ src, alt, className, width, height, ...props }) => (
+            <img src={src} alt={alt} className={className} width={width} height={height} {...props} />
+        );
+        const Head = () => null;
+        const Suspense = ({ children }) => <>{children}</>;
+
         window.React = React;
         window.ReactDOM = ReactDOM;
         window.Lucide = Lucide;
+        
+        // Expose components globally for the eval scope
+        window.Link = Link;
+        window.Image = Image;
+        window.Head = Head;
+        window.Suspense = Suspense;
+        window.SessionProvider = ({ children }) => <>{children}</>;
+        
         Object.assign(window, React);
 
         window.switchBlock = (id) => {
@@ -203,7 +247,7 @@ export async function GET(
                 });
                 const componentCode = result.code;
                 
-                var wrappedCode = "(function(React, Lucide) { " + 
+                var wrappedCode = "(function(React, Lucide, Link, Image, Suspense, SessionProvider) { " + 
                     "const exports = {}; " + 
                     "const module = { exports }; " + 
                     componentCode + "; " + 
@@ -211,7 +255,7 @@ export async function GET(
                     "if (primary) return primary; " + 
                     (block.fallbackName ? "if (typeof " + block.fallbackName + " !== 'undefined') return " + block.fallbackName + "; " : "") +
                     "return null; " +
-                "})(window.React, window.Lucide)";
+                "})(window.React, window.Lucide, window.Link, window.Image, window.Suspense, window.SessionProvider)";
                 
                 const Component = eval(wrappedCode);
 
