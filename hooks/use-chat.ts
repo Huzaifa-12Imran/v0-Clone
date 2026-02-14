@@ -227,15 +227,60 @@ export function useChat(chatId: string) {
         }
 
         setIsStreaming(true);
+        // Add an initial empty assistant message to chat history
         setChatHistory((prev) => [
           ...prev,
           {
             type: "assistant",
-            content: [],
+            content: "",
             isStreaming: true,
-            stream: response.body,
           },
         ]);
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let accumulatedText = "";
+
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            const chunk = decoder.decode(value, { stream: true });
+            accumulatedText += chunk;
+
+            // Update the last message in chat history with the accumulated text
+            setChatHistory((prev) => {
+              const updated = [...prev];
+              if (updated.length > 0) {
+                const lastIndex = updated.length - 1;
+                updated[lastIndex] = {
+                  ...updated[lastIndex],
+                  content: accumulatedText,
+                };
+              }
+              return updated;
+            });
+          }
+        } catch (streamError) {
+          console.error("Error reading stream:", streamError);
+        } finally {
+          // Mark streaming as complete
+          setChatHistory((prev) => {
+            const updated = [...prev];
+            if (updated.length > 0) {
+              const lastIndex = updated.length - 1;
+              updated[lastIndex] = {
+                ...updated[lastIndex],
+                isStreaming: false,
+              };
+            }
+            return updated;
+          });
+
+          // Trigger the same completion logic as before
+          handleStreamingComplete(accumulatedText);
+        }
       } catch (error) {
         console.error("Error:", error);
         const errorMessage =

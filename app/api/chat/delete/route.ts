@@ -1,9 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { createClient } from "v0-sdk";
-
-const v0 = createClient(
-  process.env.V0_API_URL ? { baseUrl: process.env.V0_API_URL } : {},
-);
+import { deleteChatOwnership } from "@/lib/db/queries";
+import { getChatStore } from "@/lib/chat-store";
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,11 +13,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result = await v0.chats.delete({
-      chatId,
-    });
+    // Delete from in-memory store
+    const chatStore = getChatStore();
+    chatStore.delete(chatId);
 
-    return NextResponse.json(result);
+    // Delete ownership record
+    try {
+      await deleteChatOwnership({ v0ChatId: chatId });
+    } catch (error) {
+      console.error("Error deleting chat ownership:", error);
+    }
+
+    return NextResponse.json({ success: true, message: "Chat deleted" });
   } catch (error) {
     console.error("Error deleting chat:", error);
     return NextResponse.json(

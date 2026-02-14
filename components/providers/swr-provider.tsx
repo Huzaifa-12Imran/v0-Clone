@@ -20,7 +20,7 @@ export function SWRProvider({ children }: SWRProviderProps) {
           fetch(url).then((res) => {
             if (!res.ok) {
               const error = new Error(
-                "An error occurred while fetching the data.",
+                `An error occurred while fetching the data from ${url} (Status: ${res.status})`,
               ) as FetchError;
               error.info = res.json();
               error.status = res.status;

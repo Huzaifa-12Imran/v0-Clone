@@ -2,7 +2,7 @@ import "server-only";
 
 import { and, count, desc, eq, gte, asc } from "drizzle-orm";
 import db from "./connection";
-import { chat_ownerships, type User, users, projects, project_versions } from "./schema";
+import { chat_ownerships, type User, users, projects, project_versions, chat_messages } from "./schema";
 import { generateHashedPassword } from "./utils";
 
 /**
@@ -291,6 +291,50 @@ export async function getProjectVersion({
     return projectVersion;
   } catch (error) {
     console.error("Failed to get project version from database");
+    throw error;
+  }
+}
+
+// ============ Chat Message Functions ============
+
+/** Saves a single chat message to the database. */
+export async function saveChatMessage({
+  chatId,
+  role,
+  content,
+}: {
+  chatId: string;
+  role: "user" | "model";
+  content: string;
+}) {
+  try {
+    return await getDb()
+      .insert(chat_messages)
+      .values({
+        chat_id: chatId,
+        role,
+        content,
+      })
+      .returning();
+  } catch (error) {
+    console.error("Failed to save chat message to database:", error);
+    throw error;
+  }
+}
+
+/** Gets all messages for a given chat ID, sorted by creation date. */
+export async function getChatMessages({ chatId }: { chatId: string }) {
+  try {
+    return await getDb()
+      .select({
+        role: chat_messages.role,
+        content: chat_messages.content,
+      })
+      .from(chat_messages)
+      .where(eq(chat_messages.chat_id, chatId))
+      .orderBy(asc(chat_messages.created_at));
+  } catch (error) {
+    console.error("Failed to get chat messages from database:", error);
     throw error;
   }
 }

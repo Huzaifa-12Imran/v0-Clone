@@ -1,5 +1,6 @@
 import { Message, type MessageBinaryFormat } from "@v0-sdk/react";
 import { sharedComponents } from "./shared-components";
+import { Streamdown } from "streamdown";
 
 // Function to preprocess message content and remove V0_FILE markers and shell placeholders
 function preprocessMessageContent(
@@ -56,13 +57,11 @@ export function MessageRenderer({
   role,
   className,
 }: MessageRendererProps) {
-  // If content is a string (user message or fallback), render it as plain text
+  // If content is a string (user message or fallback), render it as Markdown
   if (typeof content === "string") {
     return (
       <div className={className}>
-        <p className="mb-4 text-gray-700 leading-relaxed dark:text-gray-200">
-          {content}
-        </p>
+        <Streamdown>{content}</Streamdown>
       </div>
     );
   }

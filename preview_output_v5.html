@@ -1,0 +1,1163 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <title>Preview</title>
+    <style>
+        body { margin: 0; padding: 0; min-height: 100vh; background: #f9fafb; font-family: sans-serif; }
+        #root { height: 100%; }
+        .error-box { padding: 20px; color: #b91c1c; background: #fef2f2; border: 1px solid #fee2e2; border-radius: 8px; margin: 16px; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        // Global Mocks
+        const LucideIcon = ({ name, className }) => (
+            <span className={className} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+            </span>
+        );
+
+        const lucideIcons = ['Play', 'Zap', 'Heart', 'Layers', 'Search', 'Bell', 'User', 'ShoppingCart', 'Settings', 'ChevronRight', 'ChevronLeft', 'ArrowRight', 'Star', 'Coffee', 'Menu', 'MapPin', 'Clock', 'Phone', 'Facebook', 'Instagram', 'Twitter', 'Quote', 'ChevronDown', 'ExternalLink', 'Github', 'Mail', 'Plus', 'X', 'Check'];
+        const Lucide = {};
+        lucideIcons.forEach(icon => { Lucide[icon] = (p) => <LucideIcon name={icon} {...p} />; });
+
+        window.React = React;
+        window.ReactDOM = ReactDOM;
+        window.Lucide = Lucide;
+        Object.assign(window, React);
+        Object.assign(window, Lucide);
+
+        try {
+            const codeToExec = `
+
+// Assume Lucide icons are available, e.g., via 'lucide-react'
+// For this example, I'll use simple SVG paths or descriptive names
+// if actual Lucide components were imported:
+// 
+
+const App = () => {
+  // Placeholder for Lucide icons
+  const PlayIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+  );
+  const ChevronRightIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+  );
+  const StarIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+  );
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-gray-100 font-sans">
+      {/* Navbar */}
+      <nav className="container mx-auto px-4 py-6 flex justify-between items-center z-10 relative">
+        <div className="text-2xl font-bold text-white tracking-wide">
+          ANIME<span className="text-blue-500">VERSE</span>
+        </div>
+        <ul className="hidden md:flex space-x-8 text-lg">
+          <li><a href="#" className="hover:text-blue-500 transition-colors duration-300">Home</a></li>
+          <li><a href="#" className="hover:text-blue-500 transition-colors duration-300">Series</a></li>
+          <li><a href="#" className="hover:text-blue-500 transition-colors duration-300">Movies</a></li>
+          <li><a href="#" className="hover:text-blue-500 transition-colors duration-300">Genres</a></li>
+        </ul>
+        <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-full transition-all duration-300 shadow-lg">
+          Sign In
+        </button>
+      </nav>
+
+      {/* Hero Section */}
+      <header className="relative w-full h-[70vh] flex items-center justify-center overflow-hidden">
+        <img
+          src="https://images.unsplash.com/photo-1621986421528-66258a156e5f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          alt="Anime hero background"
+          className="absolute inset-0 w-full h-full object-cover blur-sm opacity-70 scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
+
+        <div className="relative z-10 text-center max-w-3xl mx-auto px-4">
+          <h1 className="text-5xl md:text-7xl font-extrabold text-white leading-tight mb-6 drop-shadow-lg">
+            Explore Limitless Anime Worlds
+          </h1>
+          <p className="text-xl md:text-2xl text-gray-300 mb-10 leading-relaxed">
+            Discover your next obsession from a vast library of series, movies, and OVAs.
+          </p>
+          <div className="flex justify-center space-x-6">
+            <button className="flex items-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-xl transition-all duration-300 transform hover:scale-105">
+              <PlayIcon className="w-6 h-6 mr-2" />
+              Watch Now
+            </button>
+            <button className="flex items-center bg-transparent border-2 border-white text-white font-bold py-3 px-8 rounded-full shadow-xl transition-all duration-300 transform hover:bg-white hover:text-gray-900">
+              Learn More
+              <ChevronRightIcon className="w-5 h-5 ml-2" />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Featured Section */}
+      <section className="container mx-auto px-4 py-16">
+        <h2 className="text-4xl font-bold text-center text-white mb-12">Featured Today</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* Anime Card 1 */}
+          <div className="bg-gray-800 rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300">
+            <img
+              src="https://images.unsplash.com/photo-1627964095818-a6b16e450849?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Anime Title 1"
+              className="w-full h-64 object-cover"
+            />
+            <div className="p-6">
+              <h3 className="text-xl font-semibold text-white mb-2">The Last Samurai</h3>
+              <p className="text-gray-400 text-sm mb-4">Action, Adventure, Fantasy</p>
+              <div className="flex items-center text-yellow-400 mb-4">
+                <StarIcon className="w-5 h-5 mr-1" fill="currentColor" />
+                <span>4.8</span>
+              </div>
+              <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md font-semibold transition-colors duration-300">
+                View Details
+              </button>
+            </div>
+          </div>
+
+          {/* Anime Card 2 */}
+          <div className="bg-gray-800 rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300">
+            <img
+              src="https://images.unsplash.com/photo-1596727220268-7c8702c222df?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Anime Title 2"
+              className="w-full h-64 object-cover"
+            />
+            <div className="p-6">
+              <h3 className="text-xl font-semibold text-white mb-2">Cybernetic Future</h3>
+              <p className="text-gray-400 text-sm mb-4">Sci-Fi, Thriller, Mystery</p>
+              <div className="flex items-center text-yellow-400 mb-4">
+                <StarIcon className="w-5 h-5 mr-1" fill="currentColor" />
+                <span>4.7</span>
+              </div>
+              <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md font-semibold transition-colors duration-300">
+                View Details
+              </button>
+            </div>
+          </div>
+
+          {/* Anime Card 3 */}
+          <div className="bg-gray-800 rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300">
+            <img
+              src="https://images.unsplash.com/photo-1593006437505-1a221f00b216?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Anime Title 3"
+              className="w-full h-64 object-cover"
+            />
+            <div className="p-6">
+              <h3 className="text-xl font-semibold text-white mb-2">Mystic Realms</h3>
+              <p className="text-gray-400 text-sm mb-4">Fantasy, Magic, Adventure</p>
+              <div className="flex items-center text-yellow-400 mb-4">
+                <StarIcon className="w-5 h-5 mr-1" fill="currentColor" />
+                <span>4.9</span>
+              </div>
+              <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md font-semibold transition-colors duration-300">
+                View Details
+              </button>
+            </div>
+          </div>
+
+          {/* Anime Card 4 */}
+          <div className="bg-gray-800 rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300">
+            <img
+              src="https://images.unsplash.com/photo-1616782297920-f1311029497e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Anime Title 4"
+              className="w-full h-64 object-cover"
+            />
+            <div className="p-6">
+              <h3 className="text-xl font-semibold text-white mb-2">Tokyo Drift Racers</h3>
+              <p className="text-gray-400 text-sm mb-4">Sports, Racing, Action</p>
+              <div className="flex items-center text-yellow-400 mb-4">
+                <StarIcon className="w-5 h-5 mr-1" fill="currentColor" />
+                <span>4.6</span>
+              </div>
+              <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md font-semibold transition-colors duration-300">
+                View Details
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-950 py-8 text-center text-gray-400">
+        <p>&copy; 2023 AnimeVerse. All rights reserved.</p>
+        <div className="flex justify-center space-x-4 mt-4 text-sm">
+          <a href="#" className="hover:text-blue-500">Privacy Policy</a>
+          <a href="#" className="hover:text-blue-500">Terms of Service</a>
+          <a href="#" className="hover:text-blue-500">Contact Us</a>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+
+
+
+
+
+// Assume Lucide icons are available, e.g., via 'lucide-react'
+// For this example, I'll use simple SVG paths or descriptive names
+// if actual Lucide components were imported:
+// 
+
+const VibrantAnimeLandingPage = () => {
+  // Placeholder for Lucide icons
+  const SearchIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+  );
+  const BellIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+  );
+  const UserIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+  );
+  const PlayCircleIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+  );
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-pink-800 to-red-700 text-white font-['Poppins',_sans-serif]">
+      {/* Navbar */}
+      <nav className="container mx-auto px-4 py-4 flex justify-between items-center z-10 relative">
+        <div className="text-3xl font-extrabold text-yellow-300 drop-shadow-lg">
+          ANIME<span className="text-white">FIESTA</span>
+        </div>
+        <ul className="hidden md:flex space-x-8 text-lg font-medium">
+          <li><a href="#" className="hover:text-yellow-300 transition-colors duration-300">Home</a></li>
+          <li><a href="#" className="hover:text-yellow-300 transition-colors duration-300">New Releases</a></li>
+          <li><a href="#" className="hover:text-yellow-300 transition-colors duration-300">Popular</a></li>
+          <li><a href="#" className="hover:text-yellow-300 transition-colors duration-300">My List</a></li>
+        </ul>
+        <div className="flex items-center space-x-4">
+          <button className="p-2 rounded-full hover:bg-white/20 transition-colors duration-300">
+            <SearchIcon className="w-6 h-6 text-white" />
+          </button>
+          <button className="p-2 rounded-full hover:bg-white/20 transition-colors duration-300">
+            <BellIcon className="w-6 h-6 text-white" />
+          </button>
+          <button className="p-2 rounded-full hover:bg-white/20 transition-colors duration-300">
+            <UserIcon className="w-6 h-6 text-white" />
+          </button>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <header className="relative w-full py-20 md:py-32 flex items-center justify-center overflow-hidden">
+        <img
+          src="https://images.unsplash.com/photo-1616782297920-f1311029497e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          alt="Vibrant anime background"
+          className="absolute inset-0 w-full h-full object-cover opacity-30"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-900/50 to-red-700/70"></div>
+
+        <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
+          <span className="text-yellow-300 text-lg font-semibold uppercase mb-4 block animate-bounce-slow">
+            Unleash Your Inner Otaku!
+          </span>
+          <h1 className="text-6xl md:text-8xl font-black text-white leading-tight mb-8 drop-shadow-lg animate-fade-in-up">
+            Anime <span className="text-yellow-300">Adventures</span> Await!
+          </h1>
+          <p className="text-xl md:text-2xl text-white mb-12 leading-relaxed opacity-90 animate-fade-in-up delay-200">
+            Dive into a world of endless stories, breathtaking art, and unforgettable characters.
+          </p>
+          <div className="flex justify-center space-x-6 animate-fade-in-up delay-400">
+            <button className="flex items-center bg-yellow-400 hover:bg-yellow-300 text-purple-900 font-extrabold py-4 px-10 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-105 text-lg">
+              <PlayCircleIcon className="w-7 h-7 mr-3" />
+              Start Watching
+            </button>
+            <button className="hidden md:flex items-center border-2 border-white text-white font-bold py-4 px-10 rounded-full shadow-xl transition-all duration-300 transform hover:bg-white hover:text-red-700 text-lg">
+              Explore Genres
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Popular Anime Section */}
+      <section className="container mx-auto px-4 py-16">
+        <h2 className="text-5xl font-extrabold text-center text-white mb-16 drop-shadow-lg">
+          Popular Series Right Now!
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          {/* Card 1 */}
+          <div className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden shadow-2xl border border-white/20 transform hover:scale-105 transition-all duration-300">
+            <img
+              src="https://images.unsplash.com/photo-1618519782806-382a39281a4d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Anime 1"
+              className="w-full h-72 object-cover"
+            />
+            <div className="p-6">
+              <h3 className="text-3xl font-bold text-yellow-300 mb-2">Shadow Warriors</h3>
+              <p className="text-white text-opacity-80 mb-4">Epic battles, ancient magic, and a quest for justice.</p>
+              <button className="bg-yellow-400 hover:bg-yellow-300 text-purple-900 font-bold py-3 px-6 rounded-lg transition-colors duration-300">
+                Watch Now
+              </button>
+            </div>
+          </div>
+
+          {/* Card 2 */}
+          <div className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden shadow-2xl border border-white/20 transform hover:scale-105 transition-all duration-300">
+            <img
+              src="https://images.unsplash.com/photo-1627964095818-a6b16e450849?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Anime 2"
+              className="w-full h-72 object-cover"
+            />
+            <div className="p-6">
+              <h3 className="text-3xl font-bold text-yellow-300 mb-2">Starfall Academy</h3>
+              <p className="text-white text-opacity-80 mb-4">Young mages, rivalries, and cosmic powers.</p>
+              <button className="bg-yellow-400 hover:bg-yellow-300 text-purple-900 font-bold py-3 px-6 rounded-lg transition-colors duration-300">
+                Watch Now
+              </button>
+            </div>
+          </div>
+
+          {/* Card 3 */}
+          <div className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden shadow-2xl border border-white/20 transform hover:scale-105 transition-all duration-300">
+            <img
+              src="https://images.unsplash.com/photo-1596727220268-7c8702c222df?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Anime 3"
+              className="w-full h-72 object-cover"
+            />
+            <div className="p-6">
+              <h3 className="text-3xl font-bold text-yellow-300 mb-2">Neon City Drifters</h3>
+              <p className="text-white text-opacity-80 mb-4">High-speed chases and cyberpunk adventures.</p>
+              <button className="bg-yellow-400 hover:bg-yellow-300 text-purple-900 font-bold py-3 px-6 rounded-lg transition-colors duration-300">
+                Watch Now
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Call to Action Section */}
+      <section className="bg-yellow-400 text-purple-900 py-16 text-center">
+        <h2 className="text-4xl md:text-5xl font-extrabold mb-6">Join the Anime Fiesta Today!</h2>
+        <p className="text-xl md:text-2xl mb-8 max-w-2xl mx-auto">
+          Sign up now for exclusive content, personalized recommendations, and a vibrant community.
+        </p>
+        <button className="bg-purple-900 hover:bg-purple-800 text-yellow-400 font-bold py-4 px-12 rounded-full text-xl shadow-lg transition-all duration-300 transform hover:scale-105">
+          Join Free
+        </button>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-red-900 py-8 text-center text-white text-opacity-70">
+        <p>&copy; 2023 AnimeFiesta. All rights reserved.</p>
+        <div className="flex justify-center space-x-6 mt-4 text-sm">
+          <a href="#" className="hover:text-yellow-300">About Us</a>
+          <a href="#" className="hover:text-yellow-300">Support</a>
+          <a href="#" className="hover:text-yellow-300">Careers</a>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+
+
+
+
+
+// Assume Lucide icons are available, e.g., via 'lucide-react'
+// For this example, I'll use simple SVG paths or descriptive names
+// if actual Lucide components were imported:
+// 
+
+const CinematicAnimeLandingPage = () => {
+  // Placeholder for Lucide icons
+  const FilmIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line><line x1="17" y1="17" x2="22" y2="17"></line></svg>
+  );
+  const GlobeIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+  );
+  const PlayIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+  );
+  const ArrowRightIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+  );
+
+  return (
+    <div className="min-h-screen bg-gray-950 text-gray-100 font-['Inter',_sans-serif]">
+      {/* Navbar */}
+      <nav className="container mx-auto px-6 py-5 flex justify-between items-center z-20 relative">
+        <div className="text-3xl font-extrabold text-white tracking-wider">
+          <span className="text-purple-500">NEO</span>ANIME
+        </div>
+        <ul className="hidden md:flex space-x-10 text-lg font-medium">
+          <li><a href="#" className="hover:text-purple-400 transition-colors duration-300">Home</a></li>
+          <li><a href="#" className="hover:text-purple-400 transition-colors duration-300">Catalog</a></li>
+          <li><a href="#" className="hover:text-purple-400 transition-colors duration-300">Discover</a></li>
+          <li><a href="#" className="hover:text-purple-400 transition-colors duration-300">Premium</a></li>
+        </ul>
+        <div className="flex items-center space-x-4">
+          <button className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-7 rounded-full transition-all duration-300 shadow-lg">
+            Sign Up
+          </button>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <header className="relative w-full h-[85vh] flex items-center justify-center overflow-hidden -mt-[88px] pt-[88px]">
+        <img
+          src="https://images.unsplash.com/photo-1621986421528-66258a156e5f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          alt="Cinematic anime hero"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/70 to-transparent"></div>
+
+        <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
+          <h1 className="text-6xl md:text-8xl font-black text-white leading-tight mb-6 drop-shadow-xl">
+            The Future of Anime, <br /> Now.
+          </h1>
+          <p className="text-xl md:text-2xl text-gray-300 mb-10 leading-relaxed max-w-2xl mx-auto">
+            Experience high-definition streams, exclusive releases, and a curated selection of masterpieces.
+          </p>
+          <div className="flex justify-center space-x-6">
+            <button className="flex items-center bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 px-10 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-105 text-lg">
+              <PlayIcon className="w-6 h-6 mr-3" />
+              Watch Trailer
+            </button>
+            <button className="hidden md:flex items-center border-2 border-white text-white font-bold py-4 px-10 rounded-full shadow-xl transition-all duration-300 transform hover:bg-white hover:text-gray-900 text-lg">
+              Explore Catalog
+              <ArrowRightIcon className="w-5 h-5 ml-2" />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Discover Section */}
+      <section className="container mx-auto px-6 py-20">
+        <h2 className="text-5xl font-extrabold text-center text-white mb-16">
+          Discover Our <span className="text-purple-400">Epic Collection</span>
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+          {/* Genre Card 1 */}
+          <div className="group relative rounded-lg overflow-hidden shadow-xl transform hover:-translate-y-2 transition-all duration-300">
+            <img
+              src="https://images.unsplash.com/photo-1618519782806-382a39281a4d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Action Anime"
+              className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-black/60 group-hover:bg-black/70 flex items-center justify-center transition-colors duration-300">
+              <h3 className="text-4xl font-bold text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                Action
+              </h3>
+            </div>
+            <div className="absolute bottom-4 left-4 text-white text-2xl font-bold opacity-100 group-hover:opacity-0 transition-opacity duration-300">Action</div>
+          </div>
+
+          {/* Genre Card 2 */}
+          <div className="group relative rounded-lg overflow-hidden shadow-xl transform hover:-translate-y-2 transition-all duration-300">
+            <img
+              src="https://images.unsplash.com/photo-1593006437505-1a221f00b216?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Fantasy Anime"
+              className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-black/60 group-hover:bg-black/70 flex items-center justify-center transition-colors duration-300">
+              <h3 className="text-4xl font-bold text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                Fantasy
+              </h3>
+            </div>
+            <div className="absolute bottom-4 left-4 text-white text-2xl font-bold opacity-100 group-hover:opacity-0 transition-opacity duration-300">Fantasy</div>
+          </div>
+
+          {/* Genre Card 3 */}
+          <div className="group relative rounded-lg overflow-hidden shadow-xl transform hover:-translate-y-2 transition-all duration-300">
+            <img
+              src="https://images.unsplash.com/photo-1596727220268-7c8702c222df?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Sci-Fi Anime"
+              className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-black/60 group-hover:bg-black/70 flex items-center justify-center transition-colors duration-300">
+              <h3 className="text-4xl font-bold text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                Sci-Fi
+              </h3>
+            </div>
+            <div className="absolute bottom-4 left-4 text-white text-2xl font-bold opacity-100 group-hover:opacity-0 transition-opacity duration-300">Sci-Fi</div>
+          </div>
+        </div>
+      </section>
+
+      {/* Premium Features Section */}
+      <section className="bg-gray-900 py-20">
+        <div className="container mx-auto px-6 flex flex-col md:flex-row items-center justify-between">
+          <div className="md:w-1/2 text-center md:text-left mb-10 md:mb-0">
+            <h2 className="text-5xl font-extrabold text-white mb-6">
+              Unlock the <span className="text-purple-400">Premium Experience</span>
+            </h2>
+            <p className="text-xl text-gray-300 mb-8 max-w-lg md:mx-0 mx-auto">
+              Enjoy ad-free streaming, offline downloads, and early access to new episodes.
+            </p>
+            <button className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 px-10 rounded-full text-lg shadow-xl transition-all duration-300 transform hover:scale-105">
+              Get Premium Now
+            </button>
+          </div>
+          <div className="md:w-1/2 flex justify-center">
+            <div className="relative w-full max-w-md aspect-video rounded-xl shadow-2xl overflow-hidden">
+              <img
+                src="https://images.unsplash.com/photo-1627964095818-a6b16e450849?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                alt="Premium features visual"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                <PlayIcon className="w-20 h-20 text-white/80 hover:text-white transition-colors duration-300 cursor-pointer" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-950 py-10 text-center text-gray-400 border-t border-gray-800">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+            <div className="text-2xl font-bold text-white tracking-wider mb-4 md:mb-0">
+              <span className="text-purple-500">NEO</span>ANIME
+            </div>
+            <div className="flex space-x-6">
+              <a href="#" className="hover:text-purple-400 transition-colors duration-300">
+                <FilmIcon className="w-6 h-6" />
+              </a>
+              <a href="#" className="hover:text-purple-400 transition-colors duration-300">
+                <GlobeIcon className="w-6 h-6" />
+              </a>
+              {/* Add more social icons if needed */}
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-left mb-8">
+            <div>
+              <h4 className="font-semibold text-white mb-3">Company</h4>
+              <ul>
+                <li><a href="#" className="hover:text-purple-400 text-sm">About Us</a></li>
+                <li><a href="#" className="hover:text-purple-400 text-sm">Careers</a></li>
+                <li><a href="#" className="hover:text-purple-400 text-sm">Press</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold text-white mb-3">Support</h4>
+              <ul>
+                <li><a href="#" className="hover:text-purple-400 text-sm">Help Center</a></li>
+                <li><a href="#" className="hover:text-purple-400 text-sm">Contact Us</a></li>
+                <li><a href="#" className="hover:text-purple-400 text-sm">FAQ</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold text-white mb-3">Legal</h4>
+              <ul>
+                <li><a href="#" className="hover:text-purple-400 text-sm">Terms of Service</a></li>
+                <li><a href="#" className="hover:text-purple-400 text-sm">Privacy Policy</a></li>
+                <li><a href="#" className="hover:text-purple-400 text-sm">Cookie Policy</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold text-white mb-3">Connect</h4>
+              <ul>
+                <li><a href="#" className="hover:text-purple-400 text-sm">Blog</a></li>
+                <li><a href="#" className="hover:text-purple-400 text-sm">Twitter</a></li>
+                <li><a href="#" className="hover:text-purple-400 text-sm">Discord</a></li>
+              </ul>
+            </div>
+          </div>
+          <p className="text-sm mt-8">&copy; 2023 NeoAnime. All rights reserved.</p>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+
+`;
+            
+            // Heuristic to check if it's JS/React or pure HTML
+            const isJS = /function|const|class|=>/.test(codeToExec);
+
+            if (!isJS && codeToExec.includes('<')) {
+                document.getElementById('root').innerHTML = codeToExec;
+            } else {
+                try {
+                    // Execute the code
+                    
+
+// Assume Lucide icons are available, e.g., via 'lucide-react'
+// For this example, I'll use simple SVG paths or descriptive names
+// if actual Lucide components were imported:
+// 
+
+const App = () => {
+  // Placeholder for Lucide icons
+  const PlayIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+  );
+  const ChevronRightIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+  );
+  const StarIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+  );
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-gray-100 font-sans">
+      {/* Navbar */}
+      <nav className="container mx-auto px-4 py-6 flex justify-between items-center z-10 relative">
+        <div className="text-2xl font-bold text-white tracking-wide">
+          ANIME<span className="text-blue-500">VERSE</span>
+        </div>
+        <ul className="hidden md:flex space-x-8 text-lg">
+          <li><a href="#" className="hover:text-blue-500 transition-colors duration-300">Home</a></li>
+          <li><a href="#" className="hover:text-blue-500 transition-colors duration-300">Series</a></li>
+          <li><a href="#" className="hover:text-blue-500 transition-colors duration-300">Movies</a></li>
+          <li><a href="#" className="hover:text-blue-500 transition-colors duration-300">Genres</a></li>
+        </ul>
+        <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-full transition-all duration-300 shadow-lg">
+          Sign In
+        </button>
+      </nav>
+
+      {/* Hero Section */}
+      <header className="relative w-full h-[70vh] flex items-center justify-center overflow-hidden">
+        <img
+          src="https://images.unsplash.com/photo-1621986421528-66258a156e5f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          alt="Anime hero background"
+          className="absolute inset-0 w-full h-full object-cover blur-sm opacity-70 scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
+
+        <div className="relative z-10 text-center max-w-3xl mx-auto px-4">
+          <h1 className="text-5xl md:text-7xl font-extrabold text-white leading-tight mb-6 drop-shadow-lg">
+            Explore Limitless Anime Worlds
+          </h1>
+          <p className="text-xl md:text-2xl text-gray-300 mb-10 leading-relaxed">
+            Discover your next obsession from a vast library of series, movies, and OVAs.
+          </p>
+          <div className="flex justify-center space-x-6">
+            <button className="flex items-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-xl transition-all duration-300 transform hover:scale-105">
+              <PlayIcon className="w-6 h-6 mr-2" />
+              Watch Now
+            </button>
+            <button className="flex items-center bg-transparent border-2 border-white text-white font-bold py-3 px-8 rounded-full shadow-xl transition-all duration-300 transform hover:bg-white hover:text-gray-900">
+              Learn More
+              <ChevronRightIcon className="w-5 h-5 ml-2" />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Featured Section */}
+      <section className="container mx-auto px-4 py-16">
+        <h2 className="text-4xl font-bold text-center text-white mb-12">Featured Today</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* Anime Card 1 */}
+          <div className="bg-gray-800 rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300">
+            <img
+              src="https://images.unsplash.com/photo-1627964095818-a6b16e450849?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Anime Title 1"
+              className="w-full h-64 object-cover"
+            />
+            <div className="p-6">
+              <h3 className="text-xl font-semibold text-white mb-2">The Last Samurai</h3>
+              <p className="text-gray-400 text-sm mb-4">Action, Adventure, Fantasy</p>
+              <div className="flex items-center text-yellow-400 mb-4">
+                <StarIcon className="w-5 h-5 mr-1" fill="currentColor" />
+                <span>4.8</span>
+              </div>
+              <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md font-semibold transition-colors duration-300">
+                View Details
+              </button>
+            </div>
+          </div>
+
+          {/* Anime Card 2 */}
+          <div className="bg-gray-800 rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300">
+            <img
+              src="https://images.unsplash.com/photo-1596727220268-7c8702c222df?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Anime Title 2"
+              className="w-full h-64 object-cover"
+            />
+            <div className="p-6">
+              <h3 className="text-xl font-semibold text-white mb-2">Cybernetic Future</h3>
+              <p className="text-gray-400 text-sm mb-4">Sci-Fi, Thriller, Mystery</p>
+              <div className="flex items-center text-yellow-400 mb-4">
+                <StarIcon className="w-5 h-5 mr-1" fill="currentColor" />
+                <span>4.7</span>
+              </div>
+              <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md font-semibold transition-colors duration-300">
+                View Details
+              </button>
+            </div>
+          </div>
+
+          {/* Anime Card 3 */}
+          <div className="bg-gray-800 rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300">
+            <img
+              src="https://images.unsplash.com/photo-1593006437505-1a221f00b216?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Anime Title 3"
+              className="w-full h-64 object-cover"
+            />
+            <div className="p-6">
+              <h3 className="text-xl font-semibold text-white mb-2">Mystic Realms</h3>
+              <p className="text-gray-400 text-sm mb-4">Fantasy, Magic, Adventure</p>
+              <div className="flex items-center text-yellow-400 mb-4">
+                <StarIcon className="w-5 h-5 mr-1" fill="currentColor" />
+                <span>4.9</span>
+              </div>
+              <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md font-semibold transition-colors duration-300">
+                View Details
+              </button>
+            </div>
+          </div>
+
+          {/* Anime Card 4 */}
+          <div className="bg-gray-800 rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300">
+            <img
+              src="https://images.unsplash.com/photo-1616782297920-f1311029497e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Anime Title 4"
+              className="w-full h-64 object-cover"
+            />
+            <div className="p-6">
+              <h3 className="text-xl font-semibold text-white mb-2">Tokyo Drift Racers</h3>
+              <p className="text-gray-400 text-sm mb-4">Sports, Racing, Action</p>
+              <div className="flex items-center text-yellow-400 mb-4">
+                <StarIcon className="w-5 h-5 mr-1" fill="currentColor" />
+                <span>4.6</span>
+              </div>
+              <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md font-semibold transition-colors duration-300">
+                View Details
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-950 py-8 text-center text-gray-400">
+        <p>&copy; 2023 AnimeVerse. All rights reserved.</p>
+        <div className="flex justify-center space-x-4 mt-4 text-sm">
+          <a href="#" className="hover:text-blue-500">Privacy Policy</a>
+          <a href="#" className="hover:text-blue-500">Terms of Service</a>
+          <a href="#" className="hover:text-blue-500">Contact Us</a>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+
+
+
+
+
+// Assume Lucide icons are available, e.g., via 'lucide-react'
+// For this example, I'll use simple SVG paths or descriptive names
+// if actual Lucide components were imported:
+// 
+
+const VibrantAnimeLandingPage = () => {
+  // Placeholder for Lucide icons
+  const SearchIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+  );
+  const BellIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+  );
+  const UserIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+  );
+  const PlayCircleIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+  );
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-pink-800 to-red-700 text-white font-['Poppins',_sans-serif]">
+      {/* Navbar */}
+      <nav className="container mx-auto px-4 py-4 flex justify-between items-center z-10 relative">
+        <div className="text-3xl font-extrabold text-yellow-300 drop-shadow-lg">
+          ANIME<span className="text-white">FIESTA</span>
+        </div>
+        <ul className="hidden md:flex space-x-8 text-lg font-medium">
+          <li><a href="#" className="hover:text-yellow-300 transition-colors duration-300">Home</a></li>
+          <li><a href="#" className="hover:text-yellow-300 transition-colors duration-300">New Releases</a></li>
+          <li><a href="#" className="hover:text-yellow-300 transition-colors duration-300">Popular</a></li>
+          <li><a href="#" className="hover:text-yellow-300 transition-colors duration-300">My List</a></li>
+        </ul>
+        <div className="flex items-center space-x-4">
+          <button className="p-2 rounded-full hover:bg-white/20 transition-colors duration-300">
+            <SearchIcon className="w-6 h-6 text-white" />
+          </button>
+          <button className="p-2 rounded-full hover:bg-white/20 transition-colors duration-300">
+            <BellIcon className="w-6 h-6 text-white" />
+          </button>
+          <button className="p-2 rounded-full hover:bg-white/20 transition-colors duration-300">
+            <UserIcon className="w-6 h-6 text-white" />
+          </button>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <header className="relative w-full py-20 md:py-32 flex items-center justify-center overflow-hidden">
+        <img
+          src="https://images.unsplash.com/photo-1616782297920-f1311029497e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          alt="Vibrant anime background"
+          className="absolute inset-0 w-full h-full object-cover opacity-30"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-900/50 to-red-700/70"></div>
+
+        <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
+          <span className="text-yellow-300 text-lg font-semibold uppercase mb-4 block animate-bounce-slow">
+            Unleash Your Inner Otaku!
+          </span>
+          <h1 className="text-6xl md:text-8xl font-black text-white leading-tight mb-8 drop-shadow-lg animate-fade-in-up">
+            Anime <span className="text-yellow-300">Adventures</span> Await!
+          </h1>
+          <p className="text-xl md:text-2xl text-white mb-12 leading-relaxed opacity-90 animate-fade-in-up delay-200">
+            Dive into a world of endless stories, breathtaking art, and unforgettable characters.
+          </p>
+          <div className="flex justify-center space-x-6 animate-fade-in-up delay-400">
+            <button className="flex items-center bg-yellow-400 hover:bg-yellow-300 text-purple-900 font-extrabold py-4 px-10 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-105 text-lg">
+              <PlayCircleIcon className="w-7 h-7 mr-3" />
+              Start Watching
+            </button>
+            <button className="hidden md:flex items-center border-2 border-white text-white font-bold py-4 px-10 rounded-full shadow-xl transition-all duration-300 transform hover:bg-white hover:text-red-700 text-lg">
+              Explore Genres
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Popular Anime Section */}
+      <section className="container mx-auto px-4 py-16">
+        <h2 className="text-5xl font-extrabold text-center text-white mb-16 drop-shadow-lg">
+          Popular Series Right Now!
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          {/* Card 1 */}
+          <div className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden shadow-2xl border border-white/20 transform hover:scale-105 transition-all duration-300">
+            <img
+              src="https://images.unsplash.com/photo-1618519782806-382a39281a4d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Anime 1"
+              className="w-full h-72 object-cover"
+            />
+            <div className="p-6">
+              <h3 className="text-3xl font-bold text-yellow-300 mb-2">Shadow Warriors</h3>
+              <p className="text-white text-opacity-80 mb-4">Epic battles, ancient magic, and a quest for justice.</p>
+              <button className="bg-yellow-400 hover:bg-yellow-300 text-purple-900 font-bold py-3 px-6 rounded-lg transition-colors duration-300">
+                Watch Now
+              </button>
+            </div>
+          </div>
+
+          {/* Card 2 */}
+          <div className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden shadow-2xl border border-white/20 transform hover:scale-105 transition-all duration-300">
+            <img
+              src="https://images.unsplash.com/photo-1627964095818-a6b16e450849?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Anime 2"
+              className="w-full h-72 object-cover"
+            />
+            <div className="p-6">
+              <h3 className="text-3xl font-bold text-yellow-300 mb-2">Starfall Academy</h3>
+              <p className="text-white text-opacity-80 mb-4">Young mages, rivalries, and cosmic powers.</p>
+              <button className="bg-yellow-400 hover:bg-yellow-300 text-purple-900 font-bold py-3 px-6 rounded-lg transition-colors duration-300">
+                Watch Now
+              </button>
+            </div>
+          </div>
+
+          {/* Card 3 */}
+          <div className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden shadow-2xl border border-white/20 transform hover:scale-105 transition-all duration-300">
+            <img
+              src="https://images.unsplash.com/photo-1596727220268-7c8702c222df?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Anime 3"
+              className="w-full h-72 object-cover"
+            />
+            <div className="p-6">
+              <h3 className="text-3xl font-bold text-yellow-300 mb-2">Neon City Drifters</h3>
+              <p className="text-white text-opacity-80 mb-4">High-speed chases and cyberpunk adventures.</p>
+              <button className="bg-yellow-400 hover:bg-yellow-300 text-purple-900 font-bold py-3 px-6 rounded-lg transition-colors duration-300">
+                Watch Now
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Call to Action Section */}
+      <section className="bg-yellow-400 text-purple-900 py-16 text-center">
+        <h2 className="text-4xl md:text-5xl font-extrabold mb-6">Join the Anime Fiesta Today!</h2>
+        <p className="text-xl md:text-2xl mb-8 max-w-2xl mx-auto">
+          Sign up now for exclusive content, personalized recommendations, and a vibrant community.
+        </p>
+        <button className="bg-purple-900 hover:bg-purple-800 text-yellow-400 font-bold py-4 px-12 rounded-full text-xl shadow-lg transition-all duration-300 transform hover:scale-105">
+          Join Free
+        </button>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-red-900 py-8 text-center text-white text-opacity-70">
+        <p>&copy; 2023 AnimeFiesta. All rights reserved.</p>
+        <div className="flex justify-center space-x-6 mt-4 text-sm">
+          <a href="#" className="hover:text-yellow-300">About Us</a>
+          <a href="#" className="hover:text-yellow-300">Support</a>
+          <a href="#" className="hover:text-yellow-300">Careers</a>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+
+
+
+
+
+// Assume Lucide icons are available, e.g., via 'lucide-react'
+// For this example, I'll use simple SVG paths or descriptive names
+// if actual Lucide components were imported:
+// 
+
+const CinematicAnimeLandingPage = () => {
+  // Placeholder for Lucide icons
+  const FilmIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line><line x1="17" y1="17" x2="22" y2="17"></line></svg>
+  );
+  const GlobeIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+  );
+  const PlayIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+  );
+  const ArrowRightIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+  );
+
+  return (
+    <div className="min-h-screen bg-gray-950 text-gray-100 font-['Inter',_sans-serif]">
+      {/* Navbar */}
+      <nav className="container mx-auto px-6 py-5 flex justify-between items-center z-20 relative">
+        <div className="text-3xl font-extrabold text-white tracking-wider">
+          <span className="text-purple-500">NEO</span>ANIME
+        </div>
+        <ul className="hidden md:flex space-x-10 text-lg font-medium">
+          <li><a href="#" className="hover:text-purple-400 transition-colors duration-300">Home</a></li>
+          <li><a href="#" className="hover:text-purple-400 transition-colors duration-300">Catalog</a></li>
+          <li><a href="#" className="hover:text-purple-400 transition-colors duration-300">Discover</a></li>
+          <li><a href="#" className="hover:text-purple-400 transition-colors duration-300">Premium</a></li>
+        </ul>
+        <div className="flex items-center space-x-4">
+          <button className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-7 rounded-full transition-all duration-300 shadow-lg">
+            Sign Up
+          </button>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <header className="relative w-full h-[85vh] flex items-center justify-center overflow-hidden -mt-[88px] pt-[88px]">
+        <img
+          src="https://images.unsplash.com/photo-1621986421528-66258a156e5f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          alt="Cinematic anime hero"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/70 to-transparent"></div>
+
+        <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
+          <h1 className="text-6xl md:text-8xl font-black text-white leading-tight mb-6 drop-shadow-xl">
+            The Future of Anime, <br /> Now.
+          </h1>
+          <p className="text-xl md:text-2xl text-gray-300 mb-10 leading-relaxed max-w-2xl mx-auto">
+            Experience high-definition streams, exclusive releases, and a curated selection of masterpieces.
+          </p>
+          <div className="flex justify-center space-x-6">
+            <button className="flex items-center bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 px-10 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-105 text-lg">
+              <PlayIcon className="w-6 h-6 mr-3" />
+              Watch Trailer
+            </button>
+            <button className="hidden md:flex items-center border-2 border-white text-white font-bold py-4 px-10 rounded-full shadow-xl transition-all duration-300 transform hover:bg-white hover:text-gray-900 text-lg">
+              Explore Catalog
+              <ArrowRightIcon className="w-5 h-5 ml-2" />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Discover Section */}
+      <section className="container mx-auto px-6 py-20">
+        <h2 className="text-5xl font-extrabold text-center text-white mb-16">
+          Discover Our <span className="text-purple-400">Epic Collection</span>
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+          {/* Genre Card 1 */}
+          <div className="group relative rounded-lg overflow-hidden shadow-xl transform hover:-translate-y-2 transition-all duration-300">
+            <img
+              src="https://images.unsplash.com/photo-1618519782806-382a39281a4d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Action Anime"
+              className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-black/60 group-hover:bg-black/70 flex items-center justify-center transition-colors duration-300">
+              <h3 className="text-4xl font-bold text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                Action
+              </h3>
+            </div>
+            <div className="absolute bottom-4 left-4 text-white text-2xl font-bold opacity-100 group-hover:opacity-0 transition-opacity duration-300">Action</div>
+          </div>
+
+          {/* Genre Card 2 */}
+          <div className="group relative rounded-lg overflow-hidden shadow-xl transform hover:-translate-y-2 transition-all duration-300">
+            <img
+              src="https://images.unsplash.com/photo-1593006437505-1a221f00b216?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Fantasy Anime"
+              className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-black/60 group-hover:bg-black/70 flex items-center justify-center transition-colors duration-300">
+              <h3 className="text-4xl font-bold text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                Fantasy
+              </h3>
+            </div>
+            <div className="absolute bottom-4 left-4 text-white text-2xl font-bold opacity-100 group-hover:opacity-0 transition-opacity duration-300">Fantasy</div>
+          </div>
+
+          {/* Genre Card 3 */}
+          <div className="group relative rounded-lg overflow-hidden shadow-xl transform hover:-translate-y-2 transition-all duration-300">
+            <img
+              src="https://images.unsplash.com/photo-1596727220268-7c8702c222df?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Sci-Fi Anime"
+              className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-black/60 group-hover:bg-black/70 flex items-center justify-center transition-colors duration-300">
+              <h3 className="text-4xl font-bold text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                Sci-Fi
+              </h3>
+            </div>
+            <div className="absolute bottom-4 left-4 text-white text-2xl font-bold opacity-100 group-hover:opacity-0 transition-opacity duration-300">Sci-Fi</div>
+          </div>
+        </div>
+      </section>
+
+      {/* Premium Features Section */}
+      <section className="bg-gray-900 py-20">
+        <div className="container mx-auto px-6 flex flex-col md:flex-row items-center justify-between">
+          <div className="md:w-1/2 text-center md:text-left mb-10 md:mb-0">
+            <h2 className="text-5xl font-extrabold text-white mb-6">
+              Unlock the <span className="text-purple-400">Premium Experience</span>
+            </h2>
+            <p className="text-xl text-gray-300 mb-8 max-w-lg md:mx-0 mx-auto">
+              Enjoy ad-free streaming, offline downloads, and early access to new episodes.
+            </p>
+            <button className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 px-10 rounded-full text-lg shadow-xl transition-all duration-300 transform hover:scale-105">
+              Get Premium Now
+            </button>
+          </div>
+          <div className="md:w-1/2 flex justify-center">
+            <div className="relative w-full max-w-md aspect-video rounded-xl shadow-2xl overflow-hidden">
+              <img
+                src="https://images.unsplash.com/photo-1627964095818-a6b16e450849?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                alt="Premium features visual"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                <PlayIcon className="w-20 h-20 text-white/80 hover:text-white transition-colors duration-300 cursor-pointer" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-950 py-10 text-center text-gray-400 border-t border-gray-800">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+            <div className="text-2xl font-bold text-white tracking-wider mb-4 md:mb-0">
+              <span className="text-purple-500">NEO</span>ANIME
+            </div>
+            <div className="flex space-x-6">
+              <a href="#" className="hover:text-purple-400 transition-colors duration-300">
+                <FilmIcon className="w-6 h-6" />
+              </a>
+              <a href="#" className="hover:text-purple-400 transition-colors duration-300">
+                <GlobeIcon className="w-6 h-6" />
+              </a>
+              {/* Add more social icons if needed */}
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-left mb-8">
+            <div>
+              <h4 className="font-semibold text-white mb-3">Company</h4>
+              <ul>
+                <li><a href="#" className="hover:text-purple-400 text-sm">About Us</a></li>
+                <li><a href="#" className="hover:text-purple-400 text-sm">Careers</a></li>
+                <li><a href="#" className="hover:text-purple-400 text-sm">Press</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold text-white mb-3">Support</h4>
+              <ul>
+                <li><a href="#" className="hover:text-purple-400 text-sm">Help Center</a></li>
+                <li><a href="#" className="hover:text-purple-400 text-sm">Contact Us</a></li>
+                <li><a href="#" className="hover:text-purple-400 text-sm">FAQ</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold text-white mb-3">Legal</h4>
+              <ul>
+                <li><a href="#" className="hover:text-purple-400 text-sm">Terms of Service</a></li>
+                <li><a href="#" className="hover:text-purple-400 text-sm">Privacy Policy</a></li>
+                <li><a href="#" className="hover:text-purple-400 text-sm">Cookie Policy</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold text-white mb-3">Connect</h4>
+              <ul>
+                <li><a href="#" className="hover:text-purple-400 text-sm">Blog</a></li>
+                <li><a href="#" className="hover:text-purple-400 text-sm">Twitter</a></li>
+                <li><a href="#" className="hover:text-purple-400 text-sm">Discord</a></li>
+              </ul>
+            </div>
+          </div>
+          <p className="text-sm mt-8">&copy; 2023 NeoAnime. All rights reserved.</p>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+
+
+
+                    // Render App
+                    if (typeof App !== 'undefined') {
+                        const root = ReactDOM.createRoot(document.getElementById('root'));
+                        root.render(<App />);
+                    } else {
+                        throw new Error("Component 'App' not found. Please ensure you export a default component.");
+                    }
+                } catch (err) {
+                    console.error("Render Error:", err);
+                    document.getElementById('root').innerHTML = `
+                        <div class="error-box">
+                            <h3 class="font-bold">Render Error</h3>
+                            <p class="text-sm">${err.message}</p>
+                            <pre class="mt-2 p-2 bg-white rounded text-[10px] overflow-auto max-h-40">${err.stack}</pre>
+                        </div>
+                    `;
+                }
+            }
+        } catch (err) {
+            console.error("Bootstrap Error:", err);
+        }
+    </script>
+</body>
+</html>
+    

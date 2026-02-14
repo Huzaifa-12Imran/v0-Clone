@@ -17,6 +17,13 @@ export async function POST(request: NextRequest) {
 
     const { name } = await request.json();
 
+    if (!db) {
+      return NextResponse.json(
+        { error: "Database not available" },
+        { status: 500 },
+      );
+    }
+
     await db
       .update(users)
       .set({ name: name || null })

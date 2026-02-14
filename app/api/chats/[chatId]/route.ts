@@ -1,19 +1,17 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { createClient } from "v0-sdk";
 import { auth } from "@/app/(auth)/auth";
-import { getChatOwnership } from "@/lib/db/queries";
-
-const v0 = createClient(
-  process.env.V0_API_URL ? { baseUrl: process.env.V0_API_URL } : {},
-);
+import { getChatOwnership, getChatMessages } from "@/lib/db/queries";
+import { getChatStore } from "@/lib/chat-store";
 
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ chatId: string }> },
 ) {
+  let chatId: string | undefined;
   try {
     const session = await auth();
-    const { chatId } = await params;
+    const resolvedParams = await params;
+    chatId = resolvedParams.chatId;
 
     if (!chatId) {
       return NextResponse.json(
@@ -23,22 +21,54 @@ export async function GET(
     }
 
     if (session?.user?.id) {
+      console.log(`[API] Checking ownership for chat ${chatId} and user ${session.user.id}`);
       const ownership = await getChatOwnership({ v0ChatId: chatId });
 
       if (!ownership) {
-        return NextResponse.json({ error: "Chat not found" }, { status: 404 });
+        console.warn(`[API] No ownership record found for chat ${chatId} in DB`);
+        return NextResponse.json({ error: "Chat ownership not found in database" }, { status: 404 });
       }
 
       if (ownership.user_id !== session.user.id) {
-        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        console.warn(`[API] User ${session.user.id} tried to access unauthorized chat ${chatId}`);
+        return NextResponse.json({ error: "Forbidden: You do not own this chat" }, { status: 403 });
       }
     }
 
-    const chatDetails = await v0.chats.getById({ chatId });
+    const chatStore = getChatStore();
+    let messages = chatStore.get(chatId);
 
-    return NextResponse.json(chatDetails);
+    if (!messages) {
+      console.log(`[API] Chat ${chatId} missing from memory, fetching from DB`);
+      const dbMessages = await getChatMessages({ chatId });
+      messages = dbMessages.map(m => ({
+        role: m.role as "user" | "model",
+        content: m.content
+      }));
+
+      if (messages.length > 0) {
+        chatStore.set(chatId, messages);
+      }
+    }
+
+    const hasCode = messages.some(m => m.content.includes("```"));
+    
+    if (!messages || messages.length === 0) {
+      return NextResponse.json({
+        id: chatId,
+        messages: [],
+        demo: hasCode ? `/api/preview/${chatId}` : undefined,
+        note: "Chat found but has no message history"
+      });
+    }
+
+    return NextResponse.json({
+      id: chatId,
+      messages: messages,
+      demo: hasCode ? `/api/preview/${chatId}` : undefined,
+    });
   } catch (error) {
-    console.error("Error fetching chat details:", error);
+    console.error(`[API] Fetch Error for chat ${chatId || 'unknown'}:`, error);
 
     return NextResponse.json(
       {

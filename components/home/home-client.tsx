@@ -209,6 +209,9 @@ export function HomeClient() {
     setIsLoading(true);
 
     try {
+      console.log("=== SENDING MESSAGE ===");
+      console.log("Message:", userMessage);
+      
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
@@ -216,34 +219,107 @@ export function HomeClient() {
         },
         body: JSON.stringify({
           message: userMessage,
+          chatId: currentChatId, // Include currentChatId to continue conversation
           streaming: true,
           attachments: currentAttachments.map((att) => ({ url: att.dataUrl })),
         }),
       });
 
+      console.log("Response status:", response.status);
+      console.log("Response ok:", response.ok);
+
       if (!response.ok) {
         const errorMessage = await getErrorMessage(response);
+        console.error("Error message:", errorMessage);
         throw new Error(errorMessage);
       }
 
+      // Read X-Chat-ID header and update currentChatId immediately for new chats
+      const serverChatId = response.headers.get("X-Chat-ID");
+      if (serverChatId && !currentChatId) {
+        setCurrentChatId(serverChatId);
+        setCurrentChat({ id: serverChatId });
+        // Update URL without triggering Next.js routing
+        window.history.pushState(null, "", `/chats/${serverChatId}`);
+      }
+
       if (!response.body) {
-        throw new Error("No response body for streaming");
+        throw new Error("No response body received");
       }
 
       setIsLoading(false);
+      setShowChatInterface(true);
 
-      // Add streaming assistant response
+      // Add an initial empty assistant message to chat history
       setChatHistory((prev) => [
         ...prev,
         {
           type: "assistant",
-          content: [],
+          content: "",
           isStreaming: true,
-          stream: response.body,
         },
       ]);
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let accumulatedText = "";
+
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value, { stream: true });
+          accumulatedText += chunk;
+
+          // Early detection of code blocks to show preview sooner
+          if (!currentChat?.demo && accumulatedText.includes("```")) {
+              setCurrentChat((prev) => {
+                  if (prev?.id && !prev.demo) {
+                      return { ...prev, demo: `/api/preview/${prev.id}` };
+                  }
+                  return prev;
+              });
+          }
+
+          // Update the last message in chat history with the accumulated text
+          setChatHistory((prev) => {
+            const updated = [...prev];
+            if (updated.length > 0) {
+              const lastIndex = updated.length - 1;
+              updated[lastIndex] = {
+                ...updated[lastIndex],
+                content: accumulatedText,
+              };
+            }
+            return updated;
+          });
+        }
+      } catch (streamError) {
+        console.error("Error reading stream:", streamError);
+      } finally {
+        // Mark streaming as complete
+        setChatHistory((prev) => {
+          const updated = [...prev];
+          if (updated.length > 0) {
+            const lastIndex = updated.length - 1;
+            updated[lastIndex] = {
+              ...updated[lastIndex],
+              isStreaming: false,
+            };
+          }
+          return updated;
+        });
+
+        // Trigger the same completion logic as before
+        handleStreamingComplete(accumulatedText);
+      }
     } catch (error) {
+      console.error("=== CLIENT ERROR ===");
       console.error("Error creating chat:", error);
+      console.error("Error type:", error?.constructor?.name);
+      console.error("Error message:", error instanceof Error ? error.message : String(error));
+      console.error("====================");
       setIsLoading(false);
 
       // Use the specific error message if available, otherwise fall back to generic message
@@ -313,11 +389,22 @@ export function HomeClient() {
       return updated;
     });
 
+    // Increment refreshKey to force a reload of the preview iframe
+    setRefreshKey((prev) => prev + 1);
+
+    // Check if the content contains a code block
+    const hasCode = typeof finalContent === "string" && finalContent.includes("```");
+
     // Fetch demo URL after streaming completes
     // Use the current state by accessing it in the state updater
     setCurrentChat((prevCurrentChat) => {
       if (prevCurrentChat?.id) {
-        // Fetch demo URL asynchronously
+        // If it has code, use our new preview route
+        if (hasCode) {
+          return { ...prevCurrentChat, demo: `/api/preview/${prevCurrentChat.id}` };
+        }
+
+        // Fetch demo URL asynchronously as a fallback
         fetch(`/api/chats/${prevCurrentChat.id}`)
           .then((response) => {
             if (response.ok) {
@@ -344,7 +431,7 @@ export function HomeClient() {
           });
       }
 
-      // Return the current state unchanged for now
+      // Return the current state unchanged for now if not using the local preview
       return prevCurrentChat;
     });
   };
@@ -392,16 +479,69 @@ export function HomeClient() {
 
       setIsLoading(false);
 
-      // Add streaming response
+      // Add assistant message to history
       setChatHistory((prev) => [
         ...prev,
         {
           type: "assistant",
-          content: [],
+          content: "",
           isStreaming: true,
-          stream: response.body,
         },
       ]);
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let accumulatedText = "";
+
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value, { stream: true });
+          accumulatedText += chunk;
+
+          // Early detection of code blocks to show preview sooner
+          if (!currentChat?.demo && accumulatedText.includes("```")) {
+              setCurrentChat((prev) => {
+                  if (prev?.id && !prev.demo) {
+                      return { ...prev, demo: `/api/preview/${prev.id}` };
+                  }
+                  return prev;
+              });
+          }
+
+          // Update the last message in chat history with the accumulated text
+          setChatHistory((prev) => {
+            const updated = [...prev];
+            if (updated.length > 0) {
+              const lastIndex = updated.length - 1;
+              updated[lastIndex] = {
+                ...updated[lastIndex],
+                content: accumulatedText,
+              };
+            }
+            return updated;
+          });
+        }
+      } catch (streamError) {
+        console.error("Error reading stream:", streamError);
+      } finally {
+        // Mark streaming as complete and handle completion
+        setChatHistory((prev) => {
+          const updated = [...prev];
+          if (updated.length > 0) {
+            const lastIndex = updated.length - 1;
+            updated[lastIndex] = {
+              ...updated[lastIndex],
+              isStreaming: false,
+            };
+          }
+          return updated;
+        });
+
+        handleStreamingComplete(accumulatedText);
+      }
     } catch (error) {
       console.error("Error:", error);
 

@@ -1,9 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { createClient } from "v0-sdk";
-
-const v0 = createClient(
-  process.env.V0_API_URL ? { baseUrl: process.env.V0_API_URL } : {},
-);
+import { getChatStore, generateChatId } from "@/lib/chat-store";
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,12 +12,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const forkedChat = await v0.chats.fork({
-      chatId,
-      privacy: "private",
-    });
+    const chatStore = getChatStore();
+    const originalChat = chatStore.get(chatId);
 
-    return NextResponse.json(forkedChat);
+    if (!originalChat) {
+      return NextResponse.json(
+        { error: "Chat not found" },
+        { status: 404 },
+      );
+    }
+
+    // Create a fork by copying messages to a new chat ID
+    const forkedChatId = generateChatId();
+    chatStore.set(forkedChatId, [...originalChat]);
+
+    return NextResponse.json({
+      id: forkedChatId,
+      messages: originalChat,
+    });
   } catch (error) {
     console.error("Error forking chat:", error);
     return NextResponse.json({ error: "Failed to fork chat" }, { status: 500 });

@@ -74,3 +74,16 @@ export const project_versions = pgTable(
 );
 
 export type ProjectVersion = InferSelectModel<typeof project_versions>;
+
+// Table for actual chat message content
+export const chat_messages = pgTable("chat_messages", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  chat_id: varchar("chat_id", { length: 255 })
+    .notNull()
+    .references(() => chat_ownerships.v0_chat_id, { onDelete: "cascade" }),
+  role: varchar("role", { length: 20 }).notNull(), // 'user' or 'model'
+  content: text("content").notNull(),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+});
+
+export type ChatMessageDB = InferSelectModel<typeof chat_messages>;
