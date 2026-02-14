@@ -65,7 +65,14 @@ export async function GET(
         }
       }
       
-      let finalCode = codeToProcess.replace(/import\s+[\s\S]*?from\s+['"][^'"]+['"];?/g, "");
+      // Process imports: convert lucide-react de-structuring to const { ... } = Lucide;
+      let finalCode = codeToProcess.replace(
+        /import\s+\{\s*([^}]+)\s*\}\s+from\s+['"]lucide-react['"];?/g,
+        "const { $1 } = Lucide;"
+      );
+      
+      // Strip remaining imports
+      finalCode = finalCode.replace(/import\s+[\s\S]*?from\s+['"][^'"]+['"];?/g, "");
 
       const topLevelSignatures = [...codeToProcess.matchAll(/^\s*(?:export\s+)?(?:default\s+)?(?:function|const|class|var|let)\s+(\w+)/gm)];
       const pascalCaseMatch = topLevelSignatures.find(m => /^[A-Z]/.test(m[1]));
@@ -105,9 +112,9 @@ export async function GET(
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin></script>
     <title>Preview System</title>
     <style>
         body { margin: 0; padding: 0; min-height: 100vh; background: #fff; font-family: -apple-system, sans-serif; display: flex; flex-direction: column; overflow: hidden; }
@@ -226,10 +233,16 @@ export async function GET(
 
         // Global error handler to catch React rendering crashes
         window.addEventListener('error', (event) => {
-            console.error("[Preview Global Error]", event.error);
+            console.error("[Preview Global Error]", event.error || event.message);
             const rootEl = document.getElementById('root');
-            if (rootEl && rootEl.innerHTML === '') {
-                rootEl.innerHTML = '<div class="error-box"><h3 class="font-bold">Execution Error</h3><p class="text-sm">' + (event.error ? event.error.message : event.message) + '</p></div>';
+            const errorMsg = event.error ? (event.error.message || event.error) : event.message;
+            
+            if (rootEl && (rootEl.innerHTML === '' || rootEl.innerHTML.includes('Initializing'))) {
+                rootEl.innerHTML = '<div class="error-box">' +
+                    '<h3 class="font-bold">Execution Error</h3>' +
+                    '<p class="text-sm">' + errorMsg + '</p>' +
+                    '<p class="text-[10px] mt-2 opacity-70 italic">Hint: This often happens if an icon or variable is used but not defined, or if there is a syntax error in the code.</p>' +
+                '</div>';
             }
         });
 
