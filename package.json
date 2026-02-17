@@ -84,6 +84,7 @@
     "@types/react": "19.2.8",
     "@types/react-dom": "19.2.3",
     "@types/react-syntax-highlighter": "15.5.13",
+    "critters": "0.0.25",
     "husky": "9.1.7",
     "lint-staged": "16.2.7",
     "monaco-editor": "0.55.1",

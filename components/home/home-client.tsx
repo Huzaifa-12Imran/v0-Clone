@@ -28,6 +28,7 @@ import { ChatMessages } from "@/components/chat/chat-messages";
 import { PreviewPanel } from "@/components/chat/preview-panel";
 import { AppHeader } from "@/components/shared/app-header";
 import { ResizableLayout } from "@/components/shared/resizable-layout";
+import { Snowfall } from "@/components/shared/snowfall";
 import type { ChatData } from "@/types/chat";
 
 // Component that uses useSearchParams - needs to be wrapped in Suspense
@@ -564,7 +565,8 @@ export function HomeClient() {
 
   if (showChatInterface) {
     return (
-      <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-black">
+      <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-black relative">
+        <Snowfall />
         {/* Handle search params with Suspense boundary */}
         <Suspense fallback={null}>
           <SearchParamsHandler onReset={handleReset} />
@@ -629,7 +631,8 @@ export function HomeClient() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-black">
+    <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-black relative">
+      <Snowfall />
       {/* Handle search params with Suspense boundary */}
       <Suspense fallback={null}>
         <SearchParamsHandler onReset={handleReset} />

@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   reactCompiler: true,
   experimental: {
-    optimizeCss: true,
+    optimizeCss: false,
     cssChunking: true,
     inlineCss: true,
   },

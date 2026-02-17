@@ -9,6 +9,7 @@ import { StreamingProvider } from "@/contexts/streaming-context";
 import { SidebarProvider } from "@/contexts/sidebar-context";
 import { AppSidebar } from "@/components/shared/app-sidebar";
 import { SidebarLayout } from "@/components/shared/sidebar-layout";
+import { SnowfallProvider } from "@/contexts/snowfall-context";
 
 export const metadata: Metadata = {
   title: "v0 Clone",
@@ -30,16 +31,18 @@ export default function RootLayout({
     >
       <body className="antialiased">
         <ThemeProvider>
-          <SessionProvider>
-            <SWRProvider>
-              <StreamingProvider>
-                <SidebarProvider>
-                  <AppSidebar />
-                  <SidebarLayout>{children}</SidebarLayout>
-                </SidebarProvider>
-              </StreamingProvider>
-            </SWRProvider>
-          </SessionProvider>
+          <SnowfallProvider>
+            <SessionProvider>
+              <SWRProvider>
+                <StreamingProvider>
+                  <SidebarProvider>
+                    <AppSidebar />
+                    <SidebarLayout>{children}</SidebarLayout>
+                  </SidebarProvider>
+                </StreamingProvider>
+              </SWRProvider>
+            </SessionProvider>
+          </SnowfallProvider>
         </ThemeProvider>
       </body>
     </html>
