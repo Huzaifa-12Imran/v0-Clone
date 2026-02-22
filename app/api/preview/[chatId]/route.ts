@@ -432,6 +432,37 @@ export async function GET(
         window.Head = Head;
         window.Suspense = Suspense;
         window.SessionProvider = ({ children }) => <>{children}</>;
+
+        // Auth & Router Mocks
+        const mockSession = {
+            user: {
+                id: "user_mock_123",
+                name: "Mock User",
+                email: "mock@example.com",
+                image: "https://avatar.vercel.sh/mock",
+                userId: "user_mock_123"
+            },
+            expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+        };
+
+        window.useSession = () => ({
+            data: mockSession,
+            status: "authenticated",
+            update: async () => mockSession
+        });
+
+        window.useRouter = () => ({
+            push: (url) => console.log("Mock Router Push:", url),
+            replace: (url) => console.log("Mock Router Replace:", url),
+            prefetch: () => {},
+            back: () => {},
+            forward: () => {},
+            refresh: () => {},
+        });
+
+        window.usePathname = () => "/";
+        window.useParams = () => ({});
+        window.auth = () => Promise.resolve(mockSession);
         
         Object.assign(window, React);
 
@@ -467,7 +498,7 @@ export async function GET(
                 });
                 const componentCode = result.code;
                 
-                var wrappedCode = "(function(React, Lucide, Link, Image, Suspense, SessionProvider) { " + 
+                var wrappedCode = "(function(React, Lucide, Link, Image, Suspense, SessionProvider, useSession, useRouter, usePathname, useParams, auth) { " + 
                     "const exports = {}; " + 
                     "const module = { exports }; " + 
                     componentCode + "; " + 
@@ -475,7 +506,7 @@ export async function GET(
                     "if (primary) return primary; " + 
                     (block.fallbackName ? "if (typeof " + block.fallbackName + " !== 'undefined') return " + block.fallbackName + "; " : "") +
                     "return null; " +
-                "})(window.React, window.Lucide, window.Link, window.Image, window.Suspense, window.SessionProvider)";
+                "})(window.React, window.Lucide, window.Link, window.Image, window.Suspense, window.SessionProvider, window.useSession, window.useRouter, window.usePathname, window.useParams, window.auth)";
                 
                 const Component = eval(wrappedCode);
 
