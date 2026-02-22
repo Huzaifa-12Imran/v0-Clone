@@ -12,6 +12,7 @@ import {
 import { CodeEditorPanel, type FileNode } from "@/components/code-editor";
 import { DeployButton } from "@/components/deployment/deploy-button";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
@@ -220,55 +221,93 @@ export function PreviewPanel({
 
           {/* Preview Tab */}
           <TabsContent value="preview" className="flex-1 m-0">
-            <WebPreview
-              defaultUrl={currentChat?.demo || ""}
-              onUrlChange={(url) => {
-                console.log("Preview URL changed:", url);
-              }}
-            >
-              <WebPreviewNavigation>
-                <WebPreviewNavigationButton
-                  onClick={() => {
-                    setRefreshKey((prev) => prev + 1);
-                  }}
-                  tooltip="Refresh preview"
-                  disabled={!currentChat?.demo}
-                >
-                  <RefreshCw className="h-4 w-4" />
-                </WebPreviewNavigationButton>
-                <WebPreviewUrl
-                  readOnly
-                  placeholder="Your app will appear here..."
-                  value={currentChat?.demo || ""}
-                />
-                <WebPreviewNavigationButton
-                  onClick={() => setIsFullscreen(!isFullscreen)}
-                  tooltip={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
-                  disabled={!currentChat?.demo}
-                >
-                  {isFullscreen ? (
-                    <Minimize className="h-4 w-4" />
-                  ) : (
-                    <Maximize className="h-4 w-4" />
-                  )}
-                </WebPreviewNavigationButton>
-              </WebPreviewNavigation>
-              {currentChat?.demo ? (
+            {/* If there's a demo URL, use the deployed preview */}
+            {currentChat?.demo ? (
+              <WebPreview
+                defaultUrl={currentChat.demo}
+                onUrlChange={(url) => {
+                  console.log("Preview URL changed:", url);
+                }}
+              >
+                <WebPreviewNavigation>
+                  <WebPreviewNavigationButton
+                    onClick={() => {
+                      setRefreshKey((prev) => prev + 1);
+                    }}
+                    tooltip="Refresh preview"
+                    disabled={!currentChat?.demo}
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                  </WebPreviewNavigationButton>
+                  <WebPreviewUrl
+                    readOnly
+                    placeholder="Your app will appear here..."
+                    value={currentChat.demo}
+                  />
+                  <WebPreviewNavigationButton
+                    onClick={() => setIsFullscreen(!isFullscreen)}
+                    tooltip={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+                    disabled={!currentChat?.demo}
+                  >
+                    {isFullscreen ? (
+                      <Minimize className="h-4 w-4" />
+                    ) : (
+                      <Maximize className="h-4 w-4" />
+                    )}
+                  </WebPreviewNavigationButton>
+                </WebPreviewNavigation>
                 <WebPreviewBody key={refreshKey} src={currentChat.demo} />
-              ) : (
-                <div className="flex flex-1 items-center justify-center bg-gray-50 dark:bg-black">
-                  <div className="text-center text-border dark:text-input">
-                    <div className="mb-2">
-                      <Monitor className="mx-auto h-12 w-12 stroke-border text-border dark:stroke-input dark:text-input" />
-                    </div>
-                    <p className="font-medium text-sm">No preview available</p>
-                    <p className="text-xs">
-                      Start a conversation to see your app here
-                    </p>
-                  </div>
+              </WebPreview>
+            ) : currentChat?.id ? (
+              /* No demo URL but have a chat - try to render code blocks directly */
+              <div className="flex h-full flex-col">
+                <div className="flex items-center gap-2 border-b px-4 py-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setRefreshKey((prev) => prev + 1)}
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                  <Input
+                    className="h-8 flex-1 text-sm"
+                    readOnly
+                    placeholder="Rendering code blocks..."
+                    value={`/api/preview/${currentChat.id}`}
+                  />
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setIsFullscreen(!isFullscreen)}
+                  >
+                    {isFullscreen ? (
+                      <Minimize className="h-4 w-4" />
+                    ) : (
+                      <Maximize className="h-4 w-4" />
+                    )}
+                  </Button>
                 </div>
-              )}
-            </WebPreview>
+                <iframe
+                  key={refreshKey}
+                  src={`/api/preview/${currentChat.id}`}
+                  className="flex-1 border-0"
+                  title="Preview"
+                  sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation"
+                />
+              </div>
+            ) : (
+              <div className="flex flex-1 items-center justify-center bg-gray-50 dark:bg-black">
+                <div className="text-center text-border dark:text-input">
+                  <div className="mb-2">
+                    <Monitor className="mx-auto h-12 w-12 stroke-border text-border dark:stroke-input dark:text-input" />
+                  </div>
+                  <p className="font-medium text-sm">No preview available</p>
+                  <p className="text-xs">
+                    Start a conversation to see your app here
+                  </p>
+                </div>
+              </div>
+            )}
           </TabsContent>
 
           {/* Code Tab */}

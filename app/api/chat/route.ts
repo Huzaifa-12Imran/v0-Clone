@@ -124,12 +124,13 @@ Generate a complete multi-file project structure. Return your response in this E
 ### Code Requirements:
 1. **Complete, working code** - NO placeholders or TODOs
 2. **Tailwind CSS** for all styling
-3. **Lucide icons** for icons (\`lucide-react\`)
-4. **TypeScript** for all files
-5. **Drizzle ORM** for database schemas
-6. **NextAuth.js** for authentication (if needed)
-7. **Proper error handling** in API routes
-8. **Type safety** throughout
+3. **MAKE IT BEAUTIFUL** - beautiful hero sections, modern cards, shadows, gradients, animations
+4. **Lucide icons** for icons (\`lucide-react\`)
+5. **JavaScript** (NOT TypeScript - the preview runs in browser so avoid type annotations like :string, useState<>). IMPORTANT: The preview system can only render STANDALONE code without imports to custom components. Instead of importing from '@/components/Y', include the component code inline in the same file. Only lucide-react icons can be imported externally.
+6. **Drizzle ORM** for database schemas
+7. **NextAuth.js** for authentication (if needed)
+8. **Proper error handling** in API routes
+9. **Type safety** throughout
 
 ### API Route Template:
 \`\`\`typescript
